@@ -111,10 +111,10 @@ export default function AppearancePage() {
                   <button key={pair.heading} onClick={() => setFonts(pair)}
                     className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${sel ? "border-mint bg-mint/5" : "border-border hover:border-mint/30"}`}>
                     <div>
-                      <p className="text-base font-semibold" style={{ fontFamily: `${pair.heading}, serif` }}>
+                      <p className="text-base font-semibold" style={{ fontFamily: (pair as any).headingVar || `${pair.heading}, serif` }}>
                         {pair.heading}
                       </p>
-                      <p className="text-xs text-muted-foreground" style={{ fontFamily: `${pair.body}, sans-serif` }}>
+                      <p className="text-xs text-muted-foreground" style={{ fontFamily: (pair as any).bodyVar || `${pair.body}, sans-serif` }}>
                         {pair.body} — body text
                       </p>
                     </div>

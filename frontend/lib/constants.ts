@@ -48,9 +48,9 @@ export const DEFAULT_FONTS = {
 };
 
 export const FONT_OPTIONS = [
-  { heading: "Sora", body: "Figtree" },
-  { heading: "Inter", body: "Inter" },
-  { heading: "Playfair Display", body: "Lato" },
-  { heading: "Montserrat", body: "Open Sans" },
-  { heading: "Poppins", body: "Nunito" },
+  { heading: "Sora",             body: "Figtree",    headingVar: "var(--font-heading)",    bodyVar: "var(--font-sans)" },
+  { heading: "Inter",            body: "Inter",      headingVar: "var(--font-inter)",      bodyVar: "var(--font-inter)" },
+  { heading: "Playfair Display", body: "Lato",       headingVar: "var(--font-playfair)",   bodyVar: "var(--font-lato)" },
+  { heading: "Montserrat",       body: "Open Sans",  headingVar: "var(--font-montserrat)", bodyVar: "var(--font-opensans)" },
+  { heading: "Poppins",          body: "Nunito",     headingVar: "var(--font-poppins)",    bodyVar: "var(--font-nunito)" },
 ];
