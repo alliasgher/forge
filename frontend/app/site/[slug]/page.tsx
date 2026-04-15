@@ -6,5 +6,9 @@ export default function PublicSitePage({ params }: { params: Promise<{ slug: str
   const { slug } = use(params);
   const data = use(getPublicSite(slug));
 
-  return <TemplateRenderer site={data.site} sections={data.sections} />;
+  return (
+    <div className="site-page">
+      <TemplateRenderer site={data.site} sections={data.sections} />
+    </div>
+  );
 }
