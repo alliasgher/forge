@@ -2,14 +2,16 @@
 
 import type { Site } from "@/lib/types";
 import { ContactForm } from "../shared/contact-form";
+import { useScrollReveal } from "@/lib/hooks/use-scroll-reveal";
 
 interface Props { content: Record<string, any>; site: Site; variant: string; slug: string }
 
 export function ContactSection({ content, site, variant, slug }: Props) {
   const c = site.colors;
   const isDark = variant === "bold";
-  const bg = isDark ? "#0D0A12" : c.background;
+  const bg = isDark ? "#0D0A18" : c.background;
   const textColor = isDark ? "#F5F0E8" : c.text;
+  const { ref, visible } = useScrollReveal();
 
   return (
     <section
@@ -17,7 +19,11 @@ export function ContactSection({ content, site, variant, slug }: Props) {
       className="px-6 py-20 md:py-28"
       style={{ backgroundColor: bg }}
     >
-      <div className="mx-auto max-w-6xl">
+      <div
+        ref={ref}
+        className="mx-auto max-w-6xl transition-all duration-700"
+        style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(50px)" }}
+      >
         <div className="grid gap-12 md:grid-cols-2 md:gap-16">
           {/* Left: Info */}
           <div>

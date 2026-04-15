@@ -2,6 +2,7 @@
 
 import type { Site } from "@/lib/types";
 import { StarRating } from "../shared/star-rating";
+import { useScrollReveal } from "@/lib/hooks/use-scroll-reveal";
 
 interface Props { content: Record<string, any>; site: Site; variant: string }
 
@@ -9,6 +10,7 @@ export function TestimonialsSection({ content, site, variant }: Props) {
   const items = content.items || [];
   const c = site.colors;
   const isDark = variant === "bold";
+  const { ref, visible } = useScrollReveal();
 
   if (items.length === 0) return null;
 
@@ -22,7 +24,11 @@ export function TestimonialsSection({ content, site, variant }: Props) {
       style={{ background: bg }}
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-14 text-center">
+        <div
+          ref={ref}
+          className="mb-14 text-center transition-all duration-700"
+          style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(40px)" }}
+        >
           <div
             className="mb-3 text-xs font-bold uppercase tracking-widest"
             style={{ color: c.secondary }}

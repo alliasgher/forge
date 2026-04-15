@@ -1,6 +1,7 @@
 "use client";
 
 import type { Site } from "@/lib/types";
+import { useScrollReveal } from "@/lib/hooks/use-scroll-reveal";
 
 interface Props { content: Record<string, any>; site: Site; variant: string }
 
@@ -8,8 +9,9 @@ export function AboutSection({ content, site, variant }: Props) {
   const { title, body, image, imagePosition } = content;
   const c = site.colors;
   const isDark = variant === "bold";
-  const bg = isDark ? "#0D0A12" : site.colors.background;
+  const bg = isDark ? "#0D0A18" : site.colors.background;
   const textColor = isDark ? "#F5F0E8" : c.text;
+  const { ref, visible } = useScrollReveal();
 
   return (
     <section
@@ -17,7 +19,11 @@ export function AboutSection({ content, site, variant }: Props) {
       className="px-6 py-20 md:py-28"
       style={{ backgroundColor: bg }}
     >
-      <div className="mx-auto max-w-6xl">
+      <div
+        ref={ref}
+        className="mx-auto max-w-6xl transition-all duration-700"
+        style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(50px)" }}
+      >
         <div
           className={`grid items-center gap-12 md:grid-cols-2 ${
             imagePosition === "left" ? "md:[grid-template-columns:1fr_1.1fr]" : "md:[grid-template-columns:1.1fr_1fr]"
