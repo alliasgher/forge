@@ -1,24 +1,34 @@
 "use client";
 
-import { ArrowLeft, Loader2, ExternalLink } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/lib/stores/onboarding-store";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { COLOR_PRESETS } from "@/lib/constants";
 import { createSite } from "@/lib/api/sites";
+import { signup } from "@/lib/api/auth";
 import { toast } from "sonner";
 
 interface StepColorPickerProps {
   guestMode?: boolean;
 }
 
+function generateGuestCredentials() {
+  const id = Math.random().toString(36).slice(2, 10);
+  return {
+    email: `guest-${id}@forge.demo`,
+    password: Math.random().toString(36).slice(2, 18),
+    name: "Guest",
+  };
+}
+
 export function StepColorPicker({ guestMode = false }: StepColorPickerProps) {
   const store = useOnboardingStore();
-  const user = useAuthStore((s) => s.user);
+  const { user, setAuth } = useAuthStore();
+  const router = useRouter();
   const [creating, setCreating] = useState(false);
-  const [showSignupGate, setShowSignupGate] = useState(false);
 
   function selectPreset(preset: typeof COLOR_PRESETS[0]) {
     store.setColors({
@@ -30,82 +40,47 @@ export function StepColorPicker({ guestMode = false }: StepColorPickerProps) {
     });
   }
 
-  // Map business type to demo slug for preview
-  const previewSlug = {
-    gym: "demo-gym",
-    retail: "demo-perfume",
-    cleaning: "demo-cleaning",
-    restaurant: "demo-cleaning",
-    salon: "demo-perfume",
-    agency: "demo-gym",
-    other: "demo-gym",
-  }[store.businessType] || "demo-gym";
-
   async function handleCreate() {
-    if (guestMode) {
-      setShowSignupGate(true);
-      return;
-    }
-
     if (!store.businessName.trim()) {
       toast.error("Please go back and enter a business name");
       return;
     }
-
     setCreating(true);
+
     try {
+      let currentUser = user;
+
+      // Guest mode: auto-create an account silently
+      if (guestMode && !currentUser) {
+        const creds = generateGuestCredentials();
+        const authResult = await signup(
+          creds.name,
+          creds.email,
+          creds.password
+        );
+        setAuth(authResult.user, authResult.accessToken, authResult.refreshToken);
+        currentUser = authResult.user;
+        toast.success("Guest account created — you can upgrade later");
+      }
+
       await createSite({
         businessName: store.businessName,
         businessType: store.businessType,
         tagline: store.tagline || undefined,
         phone: store.phone || undefined,
-        email: store.email || user?.email || undefined,
+        email: store.email || currentUser?.email || undefined,
         address: store.address || undefined,
         template: store.template,
         colors: store.colors,
         fonts: store.fonts,
       });
+
       store.setStep(5);
     } catch (err: any) {
       toast.error(err.message || "Failed to create site");
     } finally {
       setCreating(false);
     }
-  }
-
-  if (showSignupGate) {
-    return (
-      <div className="text-center space-y-6 py-4">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-mint/10">
-          <span className="text-3xl">🚀</span>
-        </div>
-        <div>
-          <h2 className="font-heading text-2xl font-bold">
-            {store.businessName ? `${store.businessName} is ready to launch!` : "Your site is ready!"}
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            Create a free account to go live. No credit card, no commitment.
-          </p>
-        </div>
-        {/* Preview link */}
-        <a href={`/site/${previewSlug}`} target="_blank" rel="noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-mint hover:text-mint-dark transition-colors">
-          <ExternalLink className="h-3.5 w-3.5" />
-          Preview a similar site first
-        </a>
-        <div className="flex flex-col items-center gap-3">
-          <Link href="/signup" className="w-full max-w-sm rounded-xl bg-navy py-3.5 text-center text-sm font-bold text-white hover:bg-navy-light transition-colors">
-            Create Free Account →
-          </Link>
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Already have an account? Log in
-          </Link>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => setShowSignupGate(false)} className="text-muted-foreground">
-          ← Back to colors
-        </Button>
-      </div>
-    );
   }
 
   return (
@@ -129,9 +104,9 @@ export function StepColorPicker({ guestMode = false }: StepColorPickerProps) {
               }`}
             >
               <div className="flex gap-1">
-                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.primary }} />
-                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.secondary }} />
-                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.accent }} />
+                {[preset.primary, preset.secondary, preset.accent].map((c, i) => (
+                  <div key={i} className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: c }} />
+                ))}
               </div>
               <span className="text-xs font-medium text-foreground">{preset.name}</span>
             </button>
@@ -139,24 +114,28 @@ export function StepColorPicker({ guestMode = false }: StepColorPickerProps) {
         })}
       </div>
 
-      {/* Live preview link */}
-      <div className="mt-6 rounded-xl border border-border bg-muted/50 p-4 text-center">
-        <p className="text-xs text-muted-foreground mb-2">See what a finished site looks like</p>
-        <a href={`/site/${previewSlug}`} target="_blank" rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-mint hover:text-mint-dark transition-colors">
-          <ExternalLink className="h-3.5 w-3.5" />
-          Open preview in new tab
-        </a>
-      </div>
-
-      <div className="flex justify-between pt-5">
+      <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={() => store.setStep(3)}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <Button onClick={handleCreate} disabled={creating} className="bg-mint hover:bg-mint-dark text-white px-8">
-          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : guestMode ? "See My Site →" : "Create My Site"}
+        <Button
+          onClick={handleCreate}
+          disabled={creating}
+          className="bg-mint hover:bg-mint-dark text-white px-8"
+        >
+          {creating ? (
+            <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Creating your site...</>
+          ) : (
+            guestMode ? "Create My Site — Free →" : "Create My Site"
+          )}
         </Button>
       </div>
+
+      {guestMode && (
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          No signup form. Your site is created instantly with a guest account.
+        </p>
+      )}
     </div>
   );
 }

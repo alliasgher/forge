@@ -66,6 +66,28 @@ export function SiteFooter({ site }: { site: Site }) {
             </a>
           </p>
         </div>
+
+        {/* CTA banner for demo sites */}
+        {site.is_demo && (
+          <div
+            className="mt-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 p-5"
+            style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
+          >
+            <div>
+              <p className="text-sm font-semibold">Want a website like this for your business?</p>
+              <p className="text-xs opacity-60 mt-0.5">I build custom sites using Forge. Fast, affordable, professional.</p>
+            </div>
+            <a
+              href="https://alliasgher.vercel.app/#contact"
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 whitespace-nowrap"
+              style={{ backgroundColor: "#00C9A7", color: "#0D1B2A" }}
+            >
+              Contact Ali →
+            </a>
+          </div>
+        )}
       </div>
     </footer>
   );
