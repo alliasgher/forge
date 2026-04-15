@@ -8,16 +8,30 @@ import { StepColorPicker } from "./step-color-picker";
 import { StepDone } from "./step-done";
 
 const STEPS = [
-  { label: "Type", component: StepBusinessType },
-  { label: "Details", component: StepBusinessDetails },
-  { label: "Template", component: StepTemplateSelect },
-  { label: "Colors", component: StepColorPicker },
-  { label: "Done", component: StepDone },
+  { label: "Type" },
+  { label: "Details" },
+  { label: "Template" },
+  { label: "Colors" },
+  { label: "Done" },
 ];
 
-export function WizardShell() {
+interface WizardShellProps {
+  guestMode?: boolean;
+}
+
+export function WizardShell({ guestMode = false }: WizardShellProps) {
   const step = useOnboardingStore((s) => s.step);
-  const StepComponent = STEPS[step - 1]?.component;
+
+  const renderStep = () => {
+    switch (step) {
+      case 1: return <StepBusinessType />;
+      case 2: return <StepBusinessDetails />;
+      case 3: return <StepTemplateSelect />;
+      case 4: return <StepColorPicker guestMode={guestMode} />;
+      case 5: return <StepDone />;
+      default: return null;
+    }
+  };
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -37,18 +51,13 @@ export function WizardShell() {
               {i + 1 < step ? "✓" : i + 1}
             </div>
             {i < STEPS.length - 1 && (
-              <div
-                className={`h-px w-8 ${
-                  i + 1 < step ? "bg-mint" : "bg-border"
-                }`}
-              />
+              <div className={`h-px w-8 ${i + 1 < step ? "bg-mint" : "bg-border"}`} />
             )}
           </div>
         ))}
       </div>
 
-      {/* Step content */}
-      {StepComponent && <StepComponent />}
+      {renderStep()}
     </div>
   );
 }
