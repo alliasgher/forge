@@ -86,22 +86,25 @@ export function HeroSection({ content, site, variant }: Props) {
             {site.tagline || "Premium Fragrance House"}
           </div>
 
-          {/* Heading */}
+          {/* Heading — always white, secondary color as underline accent */}
           <h1
-            className="mb-6 font-bold leading-[1.1] tracking-tight"
+            className="mb-6 font-bold leading-[1.1] tracking-tight text-white"
             style={{
               fontFamily: `${site.fonts.heading}, serif`,
               fontSize: "clamp(3.5rem, 9vw, 8rem)",
-              background: `linear-gradient(135deg, #ffffff 0%, ${c.secondary} 35%, #f0e0c0 60%, ${c.secondary} 100%)`,
-              backgroundSize: "200% auto",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              animation: "text-shimmer 5s linear infinite",
+              textShadow: `0 0 60px ${c.secondary}40`,
             }}
           >
             {heading}
           </h1>
+          {/* Accent line under heading */}
+          <div
+            className="mb-6 h-1 w-24 rounded-full mx-auto"
+            style={{
+              background: `linear-gradient(90deg, ${c.secondary}, transparent)`,
+              animation: "shimmer 3s linear infinite",
+            }}
+          />
 
           {subheading && (
             <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
