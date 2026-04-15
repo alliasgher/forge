@@ -17,40 +17,63 @@ const DATE_RANGES = [
 
 export default function AnalyticsPage() {
   const site = useSiteStore((s) => s.site);
+  const siteLoading = useSiteStore((s) => s.loading);
   const [data, setData] = useState<AnalyticsSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [days, setDays] = useState(30);
 
   useEffect(() => {
-    if (!site) return;
+    if (siteLoading || !site) return;
     setLoading(true);
+    setData(null);
     getAnalytics(site.id, days)
       .then(setData)
+      .catch(() => {})
       .finally(() => setLoading(false));
-  }, [site, days]);
+  }, [site, siteLoading, days]);
+
+  // First-load skeleton
+  if (siteLoading || (loading && !data)) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-36" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+        </div>
+        <Skeleton className="h-64 rounded-xl" />
+      </div>
+    );
+  }
 
   const statCards = [
-    { label: "Total Views", value: data?.total_views ?? "—", icon: Eye, color: "text-mint", bg: "bg-mint/10" },
-    { label: "Top Device", value: data?.devices[0]?.device_type ?? "—", icon: Users, color: "text-navy dark:text-mint", bg: "bg-navy/10 dark:bg-mint/10" },
-    { label: "Top Referrer", value: data?.referrers[0]?.referrer ?? "—", icon: TrendingUp, color: "text-coral", bg: "bg-coral/10" },
-    { label: "Countries", value: "—", icon: Globe, color: "text-text-secondary", bg: "bg-muted" },
+    { label: "Total Views",   value: data?.total_views ?? 0,                           icon: Eye,         color: "text-mint",                         bg: "bg-mint/10" },
+    { label: "Top Device",    value: data?.devices[0]?.device_type ?? "—",             icon: Users,       color: "text-navy dark:text-mint",            bg: "bg-navy/10 dark:bg-mint/10" },
+    { label: "Top Referrer",  value: data?.referrers[0]?.referrer ?? "—",              icon: TrendingUp,  color: "text-coral",                          bg: "bg-coral/10" },
+    { label: "Countries",     value: `${new Set(data?.devices?.map((_: any) => _) ?? []).size || "—"}`, icon: Globe, color: "text-muted-foreground", bg: "bg-muted" },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold">Analytics</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Track visitors to your site.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Track visitors to your site.
+            {loading && <span className="ml-2 text-xs animate-pulse">Refreshing…</span>}
+          </p>
         </div>
-        {/* Date range selector */}
+        {/* Date range toggle */}
         <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
           {DATE_RANGES.map((r) => (
             <button
               key={r.value}
               onClick={() => setDays(r.value)}
-              className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
-                days === r.value ? "bg-navy text-white dark:bg-mint dark:text-deep" : "text-muted-foreground hover:text-foreground"
+              disabled={loading}
+              className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-all disabled:opacity-40 ${
+                days === r.value
+                  ? "bg-navy text-white dark:bg-mint dark:text-deep"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {r.label}
@@ -59,54 +82,54 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Stat cards */}
-      {loading ? (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {statCards.map((s) => (
-            <Card key={s.label} className="border-border bg-card">
-              <CardContent className="flex items-start gap-3 pt-5">
-                <div className={`rounded-xl p-2.5 ${s.bg}`}>
-                  <s.icon className={`h-4 w-4 ${s.color}`} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className="text-xl font-heading font-bold truncate">{s.value}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      <ViewsChart data={data?.views_over_time || []} />
-
-      {data && data.devices.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="border-border bg-card">
-            <CardContent className="pt-6">
-              <h3 className="mb-4 font-heading text-sm font-semibold">Device Breakdown</h3>
-              <div className="space-y-3">
-                {data.devices.map((d) => {
-                  const pct = data.total_views > 0 ? Math.round((d.views / data.total_views) * 100) : 0;
-                  return (
-                    <div key={d.device_type}>
-                      <div className="mb-1 flex justify-between text-xs">
-                        <span className="capitalize text-muted-foreground">{d.device_type}</span>
-                        <span className="font-medium">{d.views} ({pct}%)</span>
-                      </div>
-                      <div className="h-2 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full rounded-full bg-mint transition-all duration-500" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
+      {/* Stat cards — fade when refreshing */}
+      <div className={`grid grid-cols-2 gap-4 lg:grid-cols-4 transition-opacity duration-300 ${loading ? "opacity-40" : "opacity-100"}`}>
+        {statCards.map((s) => (
+          <Card key={s.label} className="border-border bg-card">
+            <CardContent className="flex items-start gap-3 pt-5">
+              <div className={`rounded-xl p-2.5 ${s.bg}`}>
+                <s.icon className={`h-4 w-4 ${s.color}`} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+                <p className="text-xl font-heading font-bold truncate">{s.value}</p>
               </div>
             </CardContent>
           </Card>
+        ))}
+      </div>
+
+      {/* Chart */}
+      <div className={`transition-opacity duration-300 ${loading ? "opacity-40" : "opacity-100"}`}>
+        <ViewsChart data={data?.views_over_time || []} />
+      </div>
+
+      {/* Device + Referrer breakdown */}
+      {data && (data.devices.length > 0 || data.referrers.length > 0) && (
+        <div className={`grid gap-4 md:grid-cols-2 transition-opacity duration-300 ${loading ? "opacity-40" : "opacity-100"}`}>
+          {data.devices.length > 0 && (
+            <Card className="border-border bg-card">
+              <CardContent className="pt-6">
+                <h3 className="mb-4 font-heading text-sm font-semibold">Device Breakdown</h3>
+                <div className="space-y-3">
+                  {data.devices.map((d) => {
+                    const pct = data.total_views > 0 ? Math.round((d.views / data.total_views) * 100) : 0;
+                    return (
+                      <div key={d.device_type}>
+                        <div className="mb-1 flex justify-between text-xs">
+                          <span className="capitalize text-muted-foreground">{d.device_type}</span>
+                          <span className="font-medium">{d.views} ({pct}%)</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <div className="h-full rounded-full bg-mint transition-all duration-500" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
           {data.referrers.length > 0 && (
             <Card className="border-border bg-card">
               <CardContent className="pt-6">
