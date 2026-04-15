@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SignupForm } from "@/components/auth/signup-form";
 import Link from "next/link";
 
 export default function SignupPage() {
@@ -8,9 +9,7 @@ export default function SignupPage() {
         <CardTitle className="text-center font-heading text-lg">Create your account</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-center text-sm text-muted-foreground">
-          Signup form will go here.
-        </p>
+        <SignupForm />
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/login" className="text-mint hover:text-mint-dark font-medium">

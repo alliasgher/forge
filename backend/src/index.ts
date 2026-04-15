@@ -5,6 +5,7 @@ import multipart from "@fastify/multipart";
 import { config } from "./config.js";
 import { migrate } from "./db/migrate.js";
 import { healthRoutes } from "./routes/health.js";
+import { authRoutes } from "./routes/auth.js";
 
 const app = Fastify({ logger: true });
 
@@ -22,7 +23,7 @@ await app.register(multipart, {
 
 // Routes
 await app.register(healthRoutes);
-// Auth, sites, sections, media, leads, analytics, appearance, public routes will be added in subsequent phases
+await app.register(authRoutes);
 
 try {
   await migrate();
