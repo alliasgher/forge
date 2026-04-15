@@ -86,8 +86,36 @@ export default function DashboardHome() {
 
   if (!site) return null;
 
+  const daysLeft = site.expires_at
+    ? Math.max(0, Math.ceil((new Date(site.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null;
+
   return (
     <div className="space-y-6">
+      {/* Expiry / upgrade banner */}
+      {daysLeft !== null && (
+        <div className={`rounded-2xl border p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+          daysLeft <= 2 ? "border-red-500/30 bg-red-500/5" : "border-mint/20 bg-mint/5"
+        }`}>
+          <div>
+            <p className={`text-sm font-bold ${daysLeft <= 2 ? "text-red-400" : "text-mint-dark dark:text-mint"}`}>
+              {daysLeft === 0 ? "⚠️ Your demo site expires today!" : `⏰ ${daysLeft} day${daysLeft !== 1 ? "s" : ""} left on your demo`}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Want a permanent site, custom design, or complex features? I can build it for you.
+            </p>
+          </div>
+          <a
+            href="https://alliasgher.vercel.app/#contact"
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 rounded-xl bg-navy px-5 py-2.5 text-xs font-bold text-white hover:bg-navy-light transition-colors dark:bg-mint dark:text-deep"
+          >
+            Contact Ali →
+          </a>
+        </div>
+      )}
+
       {/* Header + publish */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
