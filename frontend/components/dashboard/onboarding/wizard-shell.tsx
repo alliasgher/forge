@@ -6,6 +6,7 @@ import { StepBusinessDetails } from "./step-business-details";
 import { StepTemplateSelect } from "./step-template-select";
 import { StepColorPicker } from "./step-color-picker";
 import { StepDone } from "./step-done";
+import { WizardPreview } from "./wizard-preview";
 
 const STEPS = [
   { label: "Type" },
@@ -21,6 +22,10 @@ interface WizardShellProps {
 
 export function WizardShell({ guestMode = false }: WizardShellProps) {
   const step = useOnboardingStore((s) => s.step);
+  const businessName = useOnboardingStore((s) => s.businessName);
+
+  // Show preview alongside steps 3, 4 (template + colors)
+  const showPreview = step >= 3 && step <= 4 && !!businessName;
 
   const renderStep = () => {
     switch (step) {
@@ -34,7 +39,7 @@ export function WizardShell({ guestMode = false }: WizardShellProps) {
   };
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div>
       {/* Step indicator */}
       <div className="mb-8 flex items-center justify-center gap-2">
         {STEPS.map((s, i) => (
@@ -57,7 +62,21 @@ export function WizardShell({ guestMode = false }: WizardShellProps) {
         ))}
       </div>
 
-      {renderStep()}
+      {/* Side-by-side layout for steps with preview */}
+      {showPreview ? (
+        <div className="grid gap-8 lg:grid-cols-2 items-start">
+          <div>{renderStep()}</div>
+          <div className="hidden lg:block sticky top-24">
+            <WizardPreview />
+          </div>
+          {/* Mobile preview below */}
+          <div className="lg:hidden">
+            <WizardPreview />
+          </div>
+        </div>
+      ) : (
+        <div className="mx-auto max-w-xl">{renderStep()}</div>
+      )}
     </div>
   );
 }

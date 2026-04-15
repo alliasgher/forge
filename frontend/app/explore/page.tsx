@@ -22,7 +22,7 @@ export default function ExplorePage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card">
-        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 font-heading text-lg font-bold text-navy dark:text-mint">
             <Hammer className="h-5 w-5 text-mint" />
             Forge
@@ -33,7 +33,7 @@ export default function ExplorePage() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="mx-auto max-w-6xl px-4 py-12">
         {/* Pass guestMode so color-picker shows signup instead of creating */}
         <WizardShell guestMode />
       </div>
