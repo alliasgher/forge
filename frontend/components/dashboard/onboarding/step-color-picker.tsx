@@ -125,15 +125,15 @@ export function StepColorPicker({ guestMode = false }: StepColorPickerProps) {
               key={preset.name}
               onClick={() => selectPreset(preset)}
               className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition-all hover:border-mint/40 ${
-                selected ? "border-mint bg-mint/5 shadow-sm" : "border-border bg-card"
+                selected ? "border-mint bg-mint/5 shadow-sm" : "border-border bg-background dark:bg-muted/30"
               }`}
             >
               <div className="flex gap-1">
-                <div className="h-7 w-7 rounded-full shadow-sm" style={{ backgroundColor: preset.primary }} />
-                <div className="h-7 w-7 rounded-full shadow-sm" style={{ backgroundColor: preset.secondary }} />
-                <div className="h-7 w-7 rounded-full shadow-sm" style={{ backgroundColor: preset.accent }} />
+                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.primary }} />
+                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.secondary }} />
+                <div className="h-7 w-7 rounded-full ring-1 ring-black/10 dark:ring-white/15" style={{ backgroundColor: preset.accent }} />
               </div>
-              <span className="text-xs font-medium">{preset.name}</span>
+              <span className="text-xs font-medium text-foreground">{preset.name}</span>
             </button>
           );
         })}
