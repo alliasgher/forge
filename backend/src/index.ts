@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth.js";
 import { siteRoutes } from "./routes/sites.js";
 import { sectionRoutes } from "./routes/sections.js";
 import { mediaRoutes } from "./routes/media.js";
+import { publicRoutes } from "./routes/public.js";
 
 const app = Fastify({ logger: true });
 
@@ -30,6 +31,7 @@ await app.register(authRoutes);
 await app.register(siteRoutes);
 await app.register(sectionRoutes);
 await app.register(mediaRoutes);
+await app.register(publicRoutes);
 
 try {
   await migrate();

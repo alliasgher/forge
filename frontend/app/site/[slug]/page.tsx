@@ -1,16 +1,10 @@
 import { use } from "react";
+import { TemplateRenderer } from "@/components/templates/template-renderer";
+import { getPublicSite } from "@/lib/api/public";
 
 export default function PublicSitePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const data = use(getPublicSite(slug));
 
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="font-heading text-3xl font-bold">Site: {slug}</h1>
-        <p className="mt-2 text-muted-foreground">
-          Public site template will render here.
-        </p>
-      </div>
-    </div>
-  );
+  return <TemplateRenderer site={data.site} sections={data.sections} />;
 }

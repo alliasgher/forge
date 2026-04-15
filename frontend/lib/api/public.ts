@@ -1,0 +1,18 @@
+import type { Site, Section } from "@/lib/types";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+export async function getPublicSite(slug: string): Promise<{ site: Site; sections: Section[] }> {
+  const res = await fetch(`${API_URL}/api/public/sites/${slug}`, { cache: "no-store" });
+  if (!res.ok) {
+    if (res.status === 404) throw new Error("Site not found");
+    throw new Error("Failed to load site");
+  }
+  return res.json();
+}
+
+export async function getDemoSites(): Promise<Site[]> {
+  const res = await fetch(`${API_URL}/api/public/demos`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load demos");
+  return res.json();
+}
