@@ -10,6 +10,8 @@ import { siteRoutes } from "./routes/sites.js";
 import { sectionRoutes } from "./routes/sections.js";
 import { mediaRoutes } from "./routes/media.js";
 import { publicRoutes } from "./routes/public.js";
+import { leadRoutes } from "./routes/leads.js";
+import { analyticsRoutes } from "./routes/analytics.js";
 
 const app = Fastify({ logger: true });
 
@@ -31,6 +33,8 @@ await app.register(authRoutes);
 await app.register(siteRoutes);
 await app.register(sectionRoutes);
 await app.register(mediaRoutes);
+await app.register(leadRoutes);
+await app.register(analyticsRoutes);
 await app.register(publicRoutes);
 
 try {
