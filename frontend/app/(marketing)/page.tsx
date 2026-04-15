@@ -46,7 +46,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
-              href="/signup"
+              href="/explore"
               className="inline-flex items-center gap-2 rounded-lg bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy-light transition-colors dark:bg-mint dark:text-deep dark:hover:bg-mint-dark"
             >
               Get Started Free <ArrowRight className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default function LandingPage() {
             It takes less than 5 minutes to set up. Free forever.
           </p>
           <Link
-            href="/signup"
+            href="/explore"
             className="mt-8 inline-flex items-center gap-2 rounded-lg bg-mint px-8 py-3.5 text-sm font-semibold text-deep hover:bg-mint-dark transition-colors"
           >
             Get Started <ArrowRight className="h-4 w-4" />
