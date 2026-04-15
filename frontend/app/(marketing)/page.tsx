@@ -309,8 +309,21 @@ export default function LandingPage() {
               </Link>
             </div>
             <p className="mt-5 text-xs text-muted-foreground">
-              Takes 2 minutes · No account needed to preview · Free forever
+              Guest sites are free for 7 days · No account needed to preview · Auto-published
             </p>
+            <div className="mt-6 pt-6 border-t border-mint/15">
+              <p className="text-sm text-muted-foreground mb-3">
+                Need something permanent, custom, or more complex?
+              </p>
+              <a
+                href="https://alliasgher.vercel.app/#contact"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-mint/30 bg-mint/5 px-5 py-2.5 text-sm font-semibold text-mint-dark dark:text-mint hover:bg-mint/10 transition-colors"
+              >
+                Contact Ali for a Custom Website →
+              </a>
+            </div>
           </div>
         </div>
       </section>

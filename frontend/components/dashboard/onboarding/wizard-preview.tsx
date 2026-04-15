@@ -28,6 +28,7 @@ export function WizardPreview() {
     logo_url: null,
     is_published: false,
     is_demo: false,
+    expires_at: null,
     created_at: "",
     updated_at: "",
   };

@@ -12,6 +12,11 @@ export async function publicRoutes(app: FastifyInstance) {
       const site = await sitesService.getSiteBySlug(request.params.slug);
       if (!site) return reply.status(404).send({ error: "Site not found" });
 
+      // Check expiry
+      if (site.expires_at && new Date(site.expires_at) < new Date()) {
+        return reply.status(410).send({ error: "expired", business_name: site.business_name });
+      }
+
       const sections = await sectionsService.getSections(site.id);
       const visibleSections = sections
         .filter((s) => s.visible)

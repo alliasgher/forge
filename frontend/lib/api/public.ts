@@ -2,8 +2,20 @@ import type { Site, Section } from "@/lib/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+export class SiteExpiredError extends Error {
+  businessName: string;
+  constructor(businessName: string) {
+    super("expired");
+    this.businessName = businessName;
+  }
+}
+
 export async function getPublicSite(slug: string): Promise<{ site: Site; sections: Section[] }> {
   const res = await fetch(`${API_URL}/api/public/sites/${slug}`, { cache: "no-store" });
+  if (res.status === 410) {
+    const body = await res.json().catch(() => ({}));
+    throw new SiteExpiredError(body.business_name || "This site");
+  }
   if (!res.ok) {
     if (res.status === 404) throw new Error("Site not found");
     throw new Error("Failed to load site");

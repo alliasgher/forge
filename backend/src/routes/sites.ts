@@ -34,6 +34,7 @@ export async function siteRoutes(app: FastifyInstance) {
 
     const site = await sitesService.createSite({
       ownerId: request.user.id,
+      ownerEmail: request.user.email,
       ...request.body,
     });
 

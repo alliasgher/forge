@@ -16,12 +16,16 @@ interface CreateSiteInput {
   fonts?: Record<string, string>;
 }
 
-export async function createSite(input: CreateSiteInput): Promise<Site> {
+export async function createSite(input: CreateSiteInput & { ownerEmail?: string }): Promise<Site> {
   const slug = await ensureUniqueSlug(input.slug || input.businessName);
 
+  // Guest accounts (auto-created via /explore) get a 7-day expiry
+  const isGuest = input.ownerEmail?.endsWith("@forge.demo");
+  const expiresAt = isGuest ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null;
+
   const result = await pool.query<Site>(
-    `INSERT INTO sites (owner_id, slug, business_name, business_type, tagline, phone, email, address, template, colors, fonts)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    `INSERT INTO sites (owner_id, slug, business_name, business_type, tagline, phone, email, address, template, colors, fonts, is_published, expires_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
      RETURNING *`,
     [
       input.ownerId,
@@ -35,6 +39,8 @@ export async function createSite(input: CreateSiteInput): Promise<Site> {
       input.template || "modern",
       JSON.stringify(input.colors || { primary: "#1E3A5F", secondary: "#00C9A7", accent: "#FF6B4A", background: "#FFFFFF", text: "#0D1B2A" }),
       JSON.stringify(input.fonts || { heading: "Sora", body: "Figtree" }),
+      true, // auto-publish guest sites
+      expiresAt,
     ]
   );
 

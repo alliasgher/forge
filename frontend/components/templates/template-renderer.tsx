@@ -10,6 +10,7 @@ import { TestimonialsSection } from "./sections/testimonials-section";
 import { ContactSection } from "./sections/contact-section";
 import { FaqSection } from "./sections/faq-section";
 import { PricingSection } from "./sections/pricing-section";
+import { DemoBanner } from "./shared/demo-banner";
 
 interface TemplateRendererProps {
   site: Site;
@@ -49,6 +50,7 @@ export function TemplateRenderer({ site, sections }: TemplateRendererProps) {
         })}
       </main>
       <SiteFooter site={site} />
+      <DemoBanner expiresAt={site.expires_at} isDemo={site.is_demo} />
     </SectionWrapper>
   );
 }

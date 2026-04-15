@@ -28,6 +28,7 @@ export async function migrate() {
       logo_url       TEXT,
       is_published   BOOLEAN NOT NULL DEFAULT false,
       is_demo        BOOLEAN NOT NULL DEFAULT false,
+      expires_at     TIMESTAMPTZ DEFAULT NULL,
       created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
