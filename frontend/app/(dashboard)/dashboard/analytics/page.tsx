@@ -22,15 +22,27 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(false);
   const [days, setDays] = useState(30);
 
-  useEffect(() => {
-    if (siteLoading || !site) return;
-    setLoading(true);
-    setData(null);
+  const fetchData = (showLoading = true) => {
+    if (!site) return;
+    if (showLoading) { setLoading(true); setData(null); }
     getAnalytics(site.id, days)
       .then(setData)
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  // Initial load + date range change
+  useEffect(() => {
+    if (siteLoading || !site) return;
+    fetchData(true);
   }, [site, siteLoading, days]);
+
+  // Auto-refresh every 30s (silent — no loading state)
+  useEffect(() => {
+    if (!site) return;
+    const interval = setInterval(() => fetchData(false), 30_000);
+    return () => clearInterval(interval);
+  }, [site, days]);
 
   // First-load skeleton
   if (siteLoading || (loading && !data)) {
