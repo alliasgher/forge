@@ -7,6 +7,7 @@ import { migrate } from "./db/migrate.js";
 import { healthRoutes } from "./routes/health.js";
 import { authRoutes } from "./routes/auth.js";
 import { siteRoutes } from "./routes/sites.js";
+import { sectionRoutes } from "./routes/sections.js";
 
 const app = Fastify({ logger: true });
 
@@ -26,6 +27,7 @@ await app.register(multipart, {
 await app.register(healthRoutes);
 await app.register(authRoutes);
 await app.register(siteRoutes);
+await app.register(sectionRoutes);
 
 try {
   await migrate();
