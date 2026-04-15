@@ -21,6 +21,8 @@ export const SECTION_TYPES = [
   { value: "gallery", label: "Gallery", icon: "Grid3x3" },
   { value: "testimonials", label: "Testimonials", icon: "MessageSquareQuote" },
   { value: "contact", label: "Contact", icon: "Mail" },
+  { value: "faq", label: "FAQ", icon: "HelpCircle" },
+  { value: "pricing", label: "Pricing", icon: "CreditCard" },
 ] as const;
 
 export const DEFAULT_COLORS = {

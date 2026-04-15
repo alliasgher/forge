@@ -8,6 +8,8 @@ import { ServicesSection } from "./sections/services-section";
 import { GallerySection } from "./sections/gallery-section";
 import { TestimonialsSection } from "./sections/testimonials-section";
 import { ContactSection } from "./sections/contact-section";
+import { FaqSection } from "./sections/faq-section";
+import { PricingSection } from "./sections/pricing-section";
 
 interface TemplateRendererProps {
   site: Site;
@@ -21,6 +23,8 @@ const SECTION_COMPONENTS: Record<string, React.ComponentType<any>> = {
   gallery: GallerySection,
   testimonials: TestimonialsSection,
   contact: ContactSection,
+  faq: FaqSection,
+  pricing: PricingSection,
 };
 
 export function TemplateRenderer({ site, sections }: TemplateRendererProps) {

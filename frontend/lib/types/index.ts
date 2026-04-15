@@ -57,7 +57,9 @@ export type SectionType =
   | "services"
   | "gallery"
   | "testimonials"
-  | "contact";
+  | "contact"
+  | "faq"
+  | "pricing";
 
 export interface Media {
   id: number;

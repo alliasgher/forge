@@ -1,11 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, ExternalLink, Globe, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { UserMenu } from "@/components/dashboard/user-menu";
-import { Badge } from "@/components/ui/badge";
 import { useSiteStore } from "@/lib/stores/site-store";
 
 const PAGE_TITLES: Record<string, string> = {
@@ -41,13 +40,29 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <Menu className="h-5 w-5" />
         </Button>
         <h1 className="font-heading text-base font-semibold">{title}</h1>
-        {site && (
-          <Badge variant="secondary" className="text-[10px]">
-            {site.is_published ? "Published" : "Draft"}
-          </Badge>
-        )}
       </div>
       <div className="flex items-center gap-2">
+        {site && (
+          <>
+            {/* Status badge */}
+            <div className={`hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+              site.is_published ? "bg-mint/10 text-mint" : "bg-muted text-muted-foreground"
+            }`}>
+              {site.is_published ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+              {site.is_published ? "Live" : "Draft"}
+            </div>
+            {/* Preview button */}
+            <a
+              href={`/site/${site.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-mint/30 transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              Preview
+            </a>
+          </>
+        )}
         <ThemeToggle />
         <UserMenu />
       </div>

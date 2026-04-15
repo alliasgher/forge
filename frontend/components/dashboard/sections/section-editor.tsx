@@ -13,6 +13,8 @@ import { ServicesEditor } from "./editors/services-editor";
 import { GalleryEditor } from "./editors/gallery-editor";
 import { TestimonialsEditor } from "./editors/testimonials-editor";
 import { ContactEditor } from "./editors/contact-editor";
+import { FaqEditor } from "./editors/faq-editor";
+import { PricingEditor } from "./editors/pricing-editor";
 import { toast } from "sonner";
 import type { Section } from "@/lib/types";
 import Link from "next/link";
@@ -24,6 +26,8 @@ const EDITORS: Record<string, React.ComponentType<{ content: Record<string, any>
   gallery: GalleryEditor,
   testimonials: TestimonialsEditor,
   contact: ContactEditor,
+  faq: FaqEditor,
+  pricing: PricingEditor,
 };
 
 interface SectionEditorProps {

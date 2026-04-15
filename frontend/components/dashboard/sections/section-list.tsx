@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Image, Info, Layers, Grid3x3, MessageSquareQuote, Mail,
-  Eye, EyeOff, ChevronUp, ChevronDown, GripVertical,
+  ChevronUp, ChevronDown, HelpCircle, CreditCard,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +25,8 @@ function getSectionPreview(section: Section): string {
     case "gallery": return `${c.images?.length || 0} image${c.images?.length !== 1 ? "s" : ""}`;
     case "testimonials": return `${c.items?.length || 0} review${c.items?.length !== 1 ? "s" : ""}`;
     case "contact": return c.heading || "Contact form";
+    case "faq": return `${c.items?.length || 0} question${c.items?.length !== 1 ? "s" : ""}`;
+    case "pricing": return `${c.plans?.length || 0} plan${c.plans?.length !== 1 ? "s" : ""}`;
     default: return "";
   }
 }
@@ -36,6 +38,8 @@ const SECTION_ICONS: Record<string, React.ElementType> = {
   gallery: Grid3x3,
   testimonials: MessageSquareQuote,
   contact: Mail,
+  faq: HelpCircle,
+  pricing: CreditCard,
 };
 
 export function SectionList() {
