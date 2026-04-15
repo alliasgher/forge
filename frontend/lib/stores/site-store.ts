@@ -7,6 +7,7 @@ interface SiteState {
   site: Site | null;
   sections: Section[];
   loading: boolean;
+  noSite: boolean;       // true only on confirmed 404 (user has no site)
   error: string | null;
   fetchSite: () => Promise<void>;
   fetchSections: () => Promise<void>;
@@ -19,18 +20,21 @@ export const useSiteStore = create<SiteState>((set, get) => ({
   site: null,
   sections: [],
   loading: false,
+  noSite: false,
   error: null,
 
   fetchSite: async () => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, noSite: false });
     try {
       const site = await getMySite();
-      set({ site, loading: false });
+      set({ site, loading: false, noSite: false });
     } catch (err: any) {
       if (err.status === 404) {
-        set({ site: null, loading: false });
+        // Confirmed: user has no site
+        set({ site: null, loading: false, noSite: true });
       } else {
-        set({ error: err.message, loading: false });
+        // Network/auth error — don't redirect, just show error
+        set({ site: null, loading: false, error: err.message || "Failed to load site", noSite: false });
       }
     }
   },
@@ -42,11 +46,11 @@ export const useSiteStore = create<SiteState>((set, get) => ({
       const sections = await api.fetch<Section[]>(`/api/sites/${site.id}/sections`);
       set({ sections });
     } catch {
-      // Silently fail — sections aren't critical for layout
+      // Silently fail
     }
   },
 
   setSite: (site) => set({ site }),
   setSections: (sections) => set({ sections }),
-  clear: () => set({ site: null, sections: [], loading: false, error: null }),
+  clear: () => set({ site: null, sections: [], loading: false, noSite: false, error: null }),
 }));

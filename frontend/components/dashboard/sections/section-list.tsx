@@ -43,15 +43,19 @@ const SECTION_ICONS: Record<string, React.ElementType> = {
 };
 
 export function SectionList() {
-  const { site, sections, setSections } = useSiteStore();
-  const [loading, setLoading] = useState(true);
+  const { site, sections, setSections, loading: siteLoading } = useSiteStore();
+  const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
-    if (!site) return;
+    if (siteLoading) { setLoading(true); return; }
+    if (!site) { setLoading(false); return; }
+    setLoading(true);
+    setFetchError(false);
     getSections(site.id)
       .then((data) => { setSections(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [site, setSections]);
+      .catch(() => { setLoading(false); setFetchError(true); });
+  }, [site, siteLoading, setSections]);
 
   async function handleToggle(section: Section) {
     if (!site) return;
@@ -89,6 +93,15 @@ export function SectionList() {
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className="h-16 rounded-lg" />
         ))}
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="rounded-lg border border-border p-8 text-center">
+        <p className="text-sm text-muted-foreground mb-3">Failed to load sections.</p>
+        <button onClick={() => window.location.reload()} className="text-xs text-mint hover:text-mint-dark">Retry</button>
       </div>
     );
   }

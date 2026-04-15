@@ -14,7 +14,7 @@ import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
 export default function DashboardHome() {
-  const { site, sections, loading, fetchSections, setSite } = useSiteStore();
+  const { site, sections, loading, noSite, error, fetchSections, setSite } = useSiteStore();
   const router = useRouter();
   const [leadCount, setLeadCount] = useState(0);
   const [viewCount, setViewCount] = useState(0);
@@ -34,9 +34,10 @@ export default function DashboardHome() {
     }
   }, [site, fetchSections]);
 
+  // Only redirect if we've confirmed there's no site (404), not on fetch errors
   useEffect(() => {
-    if (!loading && site === null) router.push("/dashboard/new");
-  }, [loading, site, router]);
+    if (!loading && noSite) router.push("/dashboard/new");
+  }, [loading, noSite, router]);
 
   async function handlePublish() {
     if (!site) return;
@@ -61,7 +62,7 @@ export default function DashboardHome() {
     toast.success("URL copied!");
   }
 
-  if (loading || !site) {
+  if (loading) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
@@ -71,6 +72,19 @@ export default function DashboardHome() {
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+        <p className="text-muted-foreground text-sm">Failed to load your site. Please refresh.</p>
+        <button onClick={() => window.location.reload()} className="rounded-lg bg-navy px-4 py-2 text-sm font-medium text-white hover:bg-navy-light">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!site) return null;
 
   return (
     <div className="space-y-6">
