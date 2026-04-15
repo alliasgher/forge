@@ -117,17 +117,20 @@ export default function LandingPage() {
                     forge.app/site/demo-gym
                   </div>
                 </div>
-                <div className="relative h-72 overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"
-                    alt="Demo site preview"
-                    className="h-full w-full object-cover object-top"
+                <div className="relative h-72 overflow-hidden bg-background">
+                  <iframe
+                    src="/site/demo-gym"
+                    className="absolute top-0 left-0 border-0"
+                    style={{
+                      width: "200%",
+                      height: "200%",
+                      transform: "scale(0.5)",
+                      transformOrigin: "top left",
+                      pointerEvents: "none",
+                    }}
+                    loading="lazy"
+                    title="Iron Forge Fitness preview"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <p className="font-bold text-2xl">Iron Forge Fitness</p>
-                    <p className="text-sm text-white/70 mt-1">Transform your body, transform your life</p>
-                  </div>
                 </div>
               </div>
               {/* Floating badge */}
@@ -230,31 +233,30 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              {/* Site preview */}
-              <div className="relative h-[420px] overflow-hidden">
-                <img
+              {/* Site preview — real iframe of live site */}
+              <div className="relative h-[420px] overflow-hidden bg-background">
+                <iframe
                   key={demo.slug}
-                  src={demo.image}
-                  alt={demo.name}
-                  className="h-full w-full object-cover object-top transition-all duration-500"
+                  src={`/site/${demo.slug}`}
+                  className="absolute top-0 left-0 border-0"
+                  style={{
+                    width: "200%",
+                    height: "200%",
+                    transform: "scale(0.5)",
+                    transformOrigin: "top left",
+                    pointerEvents: "none",
+                  }}
+                  loading="lazy"
+                  title={`${demo.name} preview`}
                 />
-                <div className="absolute inset-0"
-                  style={{ background: `linear-gradient(to top, ${demo.color}ee 0%, ${demo.color}88 30%, transparent 70%)` }}
-                />
-                {/* Overlay content */}
-                <div className="absolute inset-0 flex flex-col items-start justify-end p-8">
-                  <div className="inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-3"
-                    style={{ backgroundColor: `${demo.accent}25`, color: demo.accent, border: `1px solid ${demo.accent}40` }}>
-                    {demo.type}
-                  </div>
-                  <h3 className="font-bold text-white text-3xl md:text-4xl" style={{ fontFamily: "serif" }}>{demo.name}</h3>
-                  <p className="mt-2 text-white/70 text-base">{demo.tagline}</p>
-                  <Link href={`/site/${demo.slug}`} target="_blank"
-                    className="mt-5 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-all hover:opacity-90 hover:-translate-y-0.5"
-                    style={{ backgroundColor: demo.accent }}>
-                    View Full Site <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
+                {/* Bottom gradient + CTA overlay */}
+                <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+                  style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)" }} />
+                <Link href={`/site/${demo.slug}`} target="_blank"
+                  className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold text-white transition-all hover:opacity-90 z-10"
+                  style={{ backgroundColor: demo.accent }}>
+                  Open Full Site <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
               </div>
             </div>
           </div>
