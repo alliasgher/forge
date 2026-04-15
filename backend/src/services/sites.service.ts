@@ -19,9 +19,8 @@ interface CreateSiteInput {
 export async function createSite(input: CreateSiteInput & { ownerEmail?: string }): Promise<Site> {
   const slug = await ensureUniqueSlug(input.slug || input.businessName);
 
-  // Guest accounts (auto-created via /explore) get a 7-day expiry
-  const isGuest = input.ownerEmail?.endsWith("@forge.demo");
-  const expiresAt = isGuest ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null;
+  // All user-created sites expire in 7 days — portfolio demo model
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   const result = await pool.query<Site>(
     `INSERT INTO sites (owner_id, slug, business_name, business_type, tagline, phone, email, address, template, colors, fonts, is_published, expires_at)
