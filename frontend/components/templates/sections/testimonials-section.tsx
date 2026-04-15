@@ -9,123 +9,100 @@ interface Props { content: Record<string, any>; site: Site; variant: string }
 export function TestimonialsSection({ content, site, variant }: Props) {
   const items = content.items || [];
   const c = site.colors;
-  const isDark = variant === "bold";
   const { ref, visible } = useScrollReveal();
+  const anim = { opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(50px)", transition: "all 0.8s ease" };
 
   if (items.length === 0) return null;
 
-  const bg = isDark
-    ? `linear-gradient(135deg, ${c.primary}20, #0D0A12)`
-    : `linear-gradient(135deg, ${c.primary}08, ${c.secondary}08)`;
-
-  return (
-    <section
-      className="px-6 py-20 md:py-28 overflow-hidden"
-      style={{ background: bg }}
-    >
-      <div className="mx-auto max-w-6xl">
-        <div
-          ref={ref}
-          className="mb-14 text-center transition-all duration-700"
-          style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(40px)" }}
-        >
-          <div
-            className="mb-3 text-xs font-bold uppercase tracking-widest"
-            style={{ color: c.secondary }}
-          >
-            Testimonials
+  /* ── BOLD: single large quote on dark bg ── */
+  if (variant === "bold") {
+    return (
+      <section style={{ background: `linear-gradient(135deg, ${c.primary}30, #0D0A18 60%)` }}>
+        <div ref={ref} className="mx-auto max-w-6xl px-6 py-24" style={anim}>
+          <div className="mb-12 text-center">
+            <div className="text-xs tracking-[0.3em] uppercase font-semibold" style={{ color: c.secondary }}>What They Say</div>
           </div>
-          <h2
-            className="text-3xl font-bold md:text-4xl"
-            style={{ fontFamily: `${site.fonts.heading}, serif`, color: isDark ? "#fff" : c.primary }}
-          >
-            What Our Clients Say
-          </h2>
-          <div
-            className="mx-auto mt-3 h-1 w-12 rounded-full"
-            style={{ backgroundColor: c.secondary }}
-          />
-        </div>
-
-        {/* Large featured quote if only 1 */}
-        {items.length === 1 ? (
-          <div
-            className="mx-auto max-w-3xl rounded-3xl p-10 text-center"
-            style={{
-              backgroundColor: isDark ? "rgba(255,255,255,0.05)" : c.background,
-              border: `1px solid ${c.primary}15`,
-            }}
-          >
-            <div className="mb-4 text-5xl opacity-20" style={{ color: c.secondary }}>"</div>
-            <StarRating rating={items[0].rating || 5} color={c.secondary} />
-            <p
-              className="mt-4 text-lg leading-relaxed italic"
-              style={{ color: isDark ? "rgba(255,255,255,0.75)" : `${c.text}80` }}
-            >
-              "{items[0].text}"
-            </p>
-            <div className="mt-6 flex items-center justify-center gap-3">
-              {items[0].photo && (
-                <img src={items[0].photo} alt={items[0].name} className="h-12 w-12 rounded-full object-cover" />
-              )}
-              <div>
-                <p className="font-semibold" style={{ color: isDark ? "#fff" : c.primary }}>{items[0].name}</p>
-                {items[0].role && <p className="text-xs opacity-50" style={{ color: isDark ? "#fff" : c.text }}>{items[0].role}</p>}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className={`grid gap-6 ${items.length >= 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
-            {items.map((item: any, idx: number) => (
-              <div
-                key={item.id}
-                className="relative rounded-2xl p-7 transition-all hover:shadow-lg"
-                style={{
-                  backgroundColor: isDark ? "rgba(255,255,255,0.04)" : c.background,
-                  border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : c.primary + "12"}`,
-                }}
-              >
-                {/* Quote mark */}
-                <div
-                  className="absolute top-5 right-6 text-4xl font-serif leading-none opacity-10"
-                  style={{ color: c.secondary }}
-                >
-                  "
-                </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {items.map((item: any) => (
+              <div key={item.id} className="relative overflow-hidden rounded-2xl p-7" style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${c.secondary}20`, backdropFilter: "blur(10px)" }}>
+                <div className="absolute top-4 right-6 text-5xl font-serif leading-none opacity-15" style={{ color: c.secondary }}>"</div>
                 <StarRating rating={item.rating || 5} color={c.secondary} />
-                <p
-                  className="mt-4 text-sm leading-relaxed"
-                  style={{ color: isDark ? "rgba(255,255,255,0.65)" : `${c.text}75` }}
-                >
-                  "{item.text}"
-                </p>
-                <div className="mt-6 flex items-center gap-3 border-t pt-4"
-                  style={{ borderColor: isDark ? "rgba(255,255,255,0.08)" : `${c.primary}10` }}>
-                  {item.photo ? (
-                    <img src={item.photo} alt={item.name} className="h-10 w-10 rounded-full object-cover" />
-                  ) : (
-                    <div
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
-                      style={{ backgroundColor: c.primary }}
-                    >
-                      {item.name?.[0] || "?"}
-                    </div>
-                  )}
+                <p className="mt-4 text-sm leading-loose italic" style={{ color: "rgba(255,255,255,0.65)" }}>"{item.text}"</p>
+                <div className="mt-6 flex items-center gap-3 border-t pt-5" style={{ borderColor: `${c.secondary}15` }}>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-black" style={{ background: `linear-gradient(135deg, ${c.secondary}, ${c.accent || "#E8C4A0"})` }}>
+                    {item.name?.[0] || "?"}
+                  </div>
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: isDark ? "#fff" : c.primary }}>
-                      {item.name}
-                    </p>
-                    {item.role && (
-                      <p className="text-xs opacity-50" style={{ color: isDark ? "#fff" : c.text }}>
-                        {item.role}
-                      </p>
-                    )}
+                    <p className="text-sm font-bold text-white">{item.name}</p>
+                    {item.role && <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{item.role}</p>}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        )}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── MODERN: large cards with transformation photo ── */
+  if (variant === "modern") {
+    return (
+      <section style={{ backgroundColor: `${c.primary}06` }}>
+        <div ref={ref} className="mx-auto max-w-6xl px-6 py-20" style={anim}>
+          <div className="mb-12 text-center">
+            <div className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: c.secondary }}>Success Stories</div>
+            <h2 className="text-3xl font-black md:text-5xl" style={{ fontFamily: `${site.fonts.heading}, sans-serif`, color: c.primary }}>Real People, Real Results</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {items.map((item: any, i: number) => (
+              <div key={item.id} className="overflow-hidden rounded-2xl bg-white shadow-md transition-all hover:shadow-xl hover:-translate-y-1">
+                <div className="h-2" style={{ backgroundColor: [c.primary, c.secondary, "#FF6B35"][i % 3] }} />
+                <div className="p-7">
+                  <StarRating rating={item.rating || 5} color={c.secondary} />
+                  <p className="mt-4 text-sm leading-relaxed" style={{ color: `${c.text}75` }}>"{item.text}"</p>
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full text-white font-bold text-sm" style={{ backgroundColor: c.primary }}>{item.name?.[0]}</div>
+                    <div>
+                      <p className="text-sm font-bold" style={{ color: c.primary }}>{item.name}</p>
+                      {item.role && <p className="text-xs" style={{ color: `${c.text}50` }}>{item.role}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── CLASSIC: banner with photo + quote ── */
+  return (
+    <section style={{ backgroundColor: c.background }}>
+      <div ref={ref} className="mx-auto max-w-5xl px-6 py-20" style={anim}>
+        <div className="mb-10 text-center">
+          <div className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: c.secondary }}>Happy Clients</div>
+          <h2 className="text-3xl font-bold" style={{ fontFamily: `${site.fonts.heading}, serif`, color: c.primary }}>What Clients Say</h2>
+          <div className="mx-auto mt-3 h-1 w-10 rounded-full" style={{ backgroundColor: c.secondary }} />
+        </div>
+        <div className="space-y-4">
+          {items.map((item: any) => (
+            <div key={item.id} className="flex gap-5 rounded-2xl bg-white p-6 shadow-sm" style={{ border: `1px solid ${c.primary}10` }}>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-xl font-bold text-white" style={{ background: `linear-gradient(135deg, ${c.primary}, ${c.secondary})` }}>
+                {item.name?.[0] || "?"}
+              </div>
+              <div>
+                <div className="mb-2"><StarRating rating={item.rating || 5} color={c.secondary} /></div>
+                <p className="text-sm leading-relaxed" style={{ color: `${c.text}75` }}>"{item.text}"</p>
+                <div className="mt-3 flex items-center gap-2">
+                  <p className="text-sm font-bold" style={{ color: c.primary }}>{item.name}</p>
+                  {item.role && <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${c.secondary}15`, color: c.primary }}>{item.role}</span>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
