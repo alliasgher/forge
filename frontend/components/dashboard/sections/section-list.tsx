@@ -16,6 +16,19 @@ import { getSections, toggleVisibility, reorderSections } from "@/lib/api/sectio
 import { toast } from "sonner";
 import type { Section } from "@/lib/types";
 
+function getSectionPreview(section: Section): string {
+  const c = section.content;
+  switch (section.type) {
+    case "hero": return c.heading || "No heading yet";
+    case "about": return c.title || c.body?.slice(0, 50) || "No content yet";
+    case "services": return `${c.items?.length || 0} item${c.items?.length !== 1 ? "s" : ""}`;
+    case "gallery": return `${c.images?.length || 0} image${c.images?.length !== 1 ? "s" : ""}`;
+    case "testimonials": return `${c.items?.length || 0} review${c.items?.length !== 1 ? "s" : ""}`;
+    case "contact": return c.heading || "Contact form";
+    default: return "";
+  }
+}
+
 const SECTION_ICONS: Record<string, React.ElementType> = {
   hero: Image,
   about: Info,
@@ -115,10 +128,13 @@ export function SectionList() {
                 >
                   {section.title || section.type}
                 </Link>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-0.5">
                   <Badge variant="secondary" className="text-[10px] capitalize">
                     {section.type}
                   </Badge>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {getSectionPreview(section)}
+                  </span>
                 </div>
               </div>
 
