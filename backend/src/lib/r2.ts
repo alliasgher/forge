@@ -1,6 +1,8 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { v2 as cloudinary } from "cloudinary";
 import { config } from "../config.js";
 
+// ── R2 (primary) ──────────────────────────────────────────────
 const s3 = config.r2AccountId
   ? new S3Client({
       region: "auto",
@@ -12,32 +14,56 @@ const s3 = config.r2AccountId
     })
   : null;
 
-export async function uploadToR2(key: string, body: Buffer, contentType: string): Promise<string> {
-  if (!s3) {
-    // Dev fallback: return a placeholder URL
-    console.warn("R2 not configured — returning placeholder URL");
-    return `https://placehold.co/600x400?text=${encodeURIComponent(key.split("/").pop() || "image")}`;
-  }
+// ── Cloudinary (fallback when R2 not configured) ──────────────
+if (config.cloudinaryUrl) {
+  cloudinary.config({ secure: true });
+  // cloudinary-node reads CLOUDINARY_URL env var automatically
+}
 
-  await s3.send(
-    new PutObjectCommand({
+export const storageProvider = s3 ? "r2" : config.cloudinaryUrl ? "cloudinary" : "none";
+
+export async function uploadToStorage(key: string, body: Buffer, contentType: string): Promise<string> {
+  // ── R2 ──
+  if (s3) {
+    await s3.send(new PutObjectCommand({
       Bucket: config.r2BucketName,
       Key: key,
       Body: body,
       ContentType: contentType,
-    })
-  );
+    }));
+    return `${config.r2PublicUrl}/${key}`;
+  }
 
-  return `${config.r2PublicUrl}/${key}`;
+  // ── Cloudinary ──
+  if (config.cloudinaryUrl) {
+    const folder = key.split("/").slice(0, -1).join("/");
+    const publicId = key.split("/").pop()?.replace(/\.[^.]+$/, "") || key;
+    const result = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder, public_id: publicId, resource_type: "image" },
+        (err, result) => err ? reject(err) : resolve(result)
+      ).end(body);
+    });
+    return result.secure_url as string;
+  }
+
+  // ── No storage configured ──
+  throw new Error("No image storage configured. Please set R2 or Cloudinary credentials.");
 }
 
-export async function deleteFromR2(key: string): Promise<void> {
-  if (!s3) return;
-
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: config.r2BucketName,
-      Key: key,
-    })
-  );
+export async function deleteFromStorage(key: string, url?: string): Promise<void> {
+  // ── R2 ──
+  if (s3) {
+    await s3.send(new DeleteObjectCommand({ Bucket: config.r2BucketName, Key: key }));
+    return;
+  }
+  // ── Cloudinary ──
+  if (config.cloudinaryUrl && url) {
+    const publicId = url.split("/upload/")[1]?.replace(/\.[^.]+$/, "");
+    if (publicId) await cloudinary.uploader.destroy(publicId);
+  }
 }
+
+// Keep old names as aliases for backward compat
+export const uploadToR2 = uploadToStorage;
+export const deleteFromR2 = deleteFromStorage;

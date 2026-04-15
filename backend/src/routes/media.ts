@@ -17,8 +17,15 @@ export async function mediaRoutes(app: FastifyInstance) {
         return reply.status(400).send({ error: "Only image files are allowed" });
       }
 
-      const media = await mediaService.upload(parseInt(request.params.siteId), file);
-      return reply.status(201).send(media);
+      try {
+        const media = await mediaService.upload(parseInt(request.params.siteId), file);
+        return reply.status(201).send(media);
+      } catch (err: any) {
+        if (err.message?.includes("No image storage configured")) {
+          return reply.status(503).send({ error: "Image storage not configured on this server. Set CLOUDINARY_URL or R2 credentials." });
+        }
+        throw err;
+      }
     }
   );
 

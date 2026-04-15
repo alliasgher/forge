@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import path from "path";
 import { pool } from "../db/client.js";
-import { uploadToR2, deleteFromR2 } from "../lib/r2.js";
+import { uploadToStorage, deleteFromStorage } from "../lib/r2.js";
 import type { Media } from "../types/index.js";
 
 interface UploadedFile {
@@ -15,7 +15,7 @@ export async function upload(siteId: number, file: UploadedFile): Promise<Media>
   const key = `sites/${siteId}/${nanoid()}${ext}`;
   const buffer = await file.toBuffer();
 
-  const url = await uploadToR2(key, buffer, file.mimetype);
+  const url = await uploadToStorage(key, buffer, file.mimetype);
 
   const result = await pool.query<Media>(
     `INSERT INTO media (site_id, url, r2_key, filename, size, mime_type)
@@ -41,6 +41,6 @@ export async function deleteMedia(mediaId: number, siteId: number): Promise<void
   );
   if (result.rows.length === 0) return;
 
-  await deleteFromR2(result.rows[0].r2_key);
+  await deleteFromStorage(result.rows[0].r2_key, result.rows[0].url);
   await pool.query("DELETE FROM media WHERE id = $1", [mediaId]);
 }

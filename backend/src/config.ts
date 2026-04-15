@@ -10,6 +10,7 @@ export const config = {
   r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
   r2BucketName: process.env.R2_BUCKET_NAME || "forge-media",
   r2PublicUrl: process.env.R2_PUBLIC_URL || "",
+  cloudinaryUrl: process.env.CLOUDINARY_URL || "",
 };
 
 if (!config.databaseUrl) {
