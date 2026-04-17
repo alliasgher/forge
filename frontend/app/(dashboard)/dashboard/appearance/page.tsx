@@ -45,14 +45,15 @@ export default function AppearancePage() {
     <div className="grid gap-6 lg:grid-cols-[1fr_340px] items-start">
       {/* Left: controls */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h1 className="font-heading text-2xl font-bold">Appearance</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Preview updates live on the right.</p>
+            <p className="mt-1 text-sm text-muted-foreground hidden sm:block">Preview updates live on the right.</p>
           </div>
-          <Button onClick={handleSave} disabled={saving} className="bg-navy hover:bg-navy-light text-white gap-2">
+          <Button onClick={handleSave} disabled={saving} size="sm" className="bg-navy hover:bg-navy-light text-white gap-2 shrink-0">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save & Publish Changes
+            <span className="hidden sm:inline">Save & Publish Changes</span>
+            <span className="sm:hidden">Save</span>
           </Button>
         </div>
 
@@ -128,7 +129,7 @@ export default function AppearancePage() {
       </div>
 
       {/* Right: live preview */}
-      <div className="hidden lg:block sticky top-20">
+      <div className="hidden lg:block lg:sticky lg:top-16">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-mint animate-pulse" />

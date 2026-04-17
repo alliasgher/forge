@@ -18,7 +18,7 @@ export function SiteHeader({ site }: { site: Site }) {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pt-safe pl-safe pr-safe"
       style={{
         backgroundColor: scrolled
           ? isDark ? "rgba(13,10,18,0.95)" : "rgba(255,255,255,0.95)"
@@ -27,7 +27,7 @@ export function SiteHeader({ site }: { site: Site }) {
         boxShadow: scrolled ? "0 1px 0 rgba(0,0,0,0.08)" : "none",
       }}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <a href="#" className="flex items-center gap-2">
           {site.logo_url && (
@@ -75,13 +75,14 @@ export function SiteHeader({ site }: { site: Site }) {
 
         {/* Mobile hamburger */}
         <button
-          className="flex flex-col gap-1 p-2 md:hidden"
+          aria-label="Toggle menu"
+          className="flex h-11 w-11 flex-col items-center justify-center gap-1 -mr-2 md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="block h-0.5 w-5 transition-all"
+              className="block h-0.5 w-6 transition-all"
               style={{ backgroundColor: isDark ? "#fff" : site.colors.primary }}
             />
           ))}
@@ -97,13 +98,13 @@ export function SiteHeader({ site }: { site: Site }) {
             borderTop: `1px solid ${site.colors.primary}20`,
           }}
         >
-          <div className="flex flex-col gap-1 px-6 py-4">
+          <div className="flex flex-col gap-1 px-4 py-4 sm:px-6">
             {navItems.map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
                 onClick={() => setMobileOpen(false)}
-                className="py-2.5 text-sm font-medium"
+                className="py-3 text-base font-medium"
                 style={{
                   color: isDark ? "rgba(255,255,255,0.8)" : site.colors.text,
                   fontFamily: `${site.fonts.body}, sans-serif`,
@@ -115,7 +116,7 @@ export function SiteHeader({ site }: { site: Site }) {
             <a
               href="#contact"
               onClick={() => setMobileOpen(false)}
-              className="mt-2 rounded-lg px-4 py-2.5 text-center text-sm font-semibold text-white"
+              className="mt-2 rounded-lg px-4 py-3 text-center text-base font-semibold text-white"
               style={{ backgroundColor: site.colors.primary }}
             >
               Get in Touch

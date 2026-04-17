@@ -117,25 +117,26 @@ export default function DashboardHome() {
       )}
 
       {/* Header + publish */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="font-heading text-2xl font-bold">{site.business_name}</h1>
-          <p className="text-sm text-muted-foreground">{site.tagline || "Your business website"}</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-heading text-xl sm:text-2xl font-bold truncate">{site.business_name}</h1>
+          <p className="text-sm text-muted-foreground truncate">{site.tagline || "Your business website"}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={site.is_published ? "default" : "secondary"} className="gap-1">
             {site.is_published ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
             {site.is_published ? "Live" : "Draft"}
           </Badge>
           <Button variant="outline" size="sm" onClick={copyUrl} className="gap-1.5">
             {copied ? <Check className="h-3.5 w-3.5 text-mint" /> : <Copy className="h-3.5 w-3.5" />}
-            Copy URL
+            <span className="hidden sm:inline">Copy URL</span>
+            <span className="sm:hidden">Copy</span>
           </Button>
           <Button size="sm" onClick={handlePublish} disabled={publishing}
             className={site.is_published ? "" : "bg-mint hover:bg-mint-dark text-white"}
             variant={site.is_published ? "outline" : "default"}>
             {publishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> :
-              site.is_published ? "Unpublish" : "Publish Site"}
+              site.is_published ? "Unpublish" : "Publish"}
           </Button>
         </div>
       </div>

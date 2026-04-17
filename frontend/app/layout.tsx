@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Sora, Figtree, JetBrains_Mono,
   Playfair_Display, Lato,
@@ -25,6 +25,16 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["40
 export const metadata: Metadata = {
   title: "Forge — Build Your Business Website in Minutes",
   description: "Pick a template, fill in your content, and launch a professional website for your business. No coding required.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F6F8FB" },
+    { media: "(prefers-color-scheme: dark)", color: "#0D1B2A" },
+  ],
 };
 
 const allFontVars = [

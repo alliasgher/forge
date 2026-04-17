@@ -60,7 +60,7 @@ export default function LandingPage() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden px-6 py-20 md:py-32">
+      <section className="relative overflow-hidden px-4 sm:px-6 py-16 md:py-32">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-mint/8 blur-3xl" />
           <div className="absolute top-0 right-1/4 h-72 w-72 rounded-full bg-navy/8 blur-3xl" />
@@ -72,14 +72,14 @@ export default function LandingPage() {
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint/20 bg-mint/8 px-4 py-1.5 text-xs font-semibold text-mint-dark dark:text-mint">
                 <Zap className="h-3 w-3" /> No signup required to try
               </div>
-              <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight text-deep dark:text-white sm:text-5xl xl:text-6xl">
+              <h1 className="font-heading text-3xl font-bold leading-tight tracking-tight text-deep dark:text-white sm:text-5xl xl:text-6xl">
                 Your business deserves
                 <br />
                 <span className="bg-gradient-to-r from-navy via-navy-light to-mint bg-clip-text text-transparent dark:from-mint dark:to-white">
                   a great website.
                 </span>
               </h1>
-              <p className="mt-5 text-lg leading-relaxed text-muted-foreground max-w-lg">
+              <p className="mt-5 text-base sm:text-lg leading-relaxed text-muted-foreground max-w-lg">
                 Pick a template, fill in your content, and launch a professional website for your gym, salon, brand, or any business. Live preview as you build.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -93,7 +93,7 @@ export default function LandingPage() {
                   <Play className="h-4 w-4" /> See live demos
                 </Link>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-xs text-muted-foreground">
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
                 {["No credit card", "No code needed", "Live in 5 min"].map((t) => (
                   <div key={t} className="flex items-center gap-1.5">
                     <CheckCircle className="h-3.5 w-3.5 text-mint" /> {t}
@@ -144,7 +144,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="px-6 py-20 bg-muted/30">
+      <section className="px-4 sm:px-6 py-16 md:py-20 bg-muted/30">
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-mint mb-2">How It Works</p>
@@ -169,19 +169,19 @@ export default function LandingPage() {
       </section>
 
       {/* ── DEMO SITES — interactive browser mockups ── */}
-      <section id="demos" className="px-6 py-20 md:py-28">
+      <section id="demos" className="px-4 sm:px-6 py-16 md:py-28">
         <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-mint mb-2">Live Examples</p>
-            <h2 className="font-heading text-3xl font-bold text-deep dark:text-white">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-deep dark:text-white">
               Real sites built with Forge
             </h2>
-            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
               Three completely different businesses, three completely different templates — all built from the same platform.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+          <div className="grid gap-6 md:grid-cols-[260px_1fr]">
             {/* Selector */}
             <div className="space-y-3">
               {DEMOS.map((d, i) => (
@@ -234,7 +234,7 @@ export default function LandingPage() {
               </div>
 
               {/* Site preview — real iframe of live site */}
-              <div className="relative h-[420px] overflow-hidden bg-background">
+              <div className="relative h-[300px] sm:h-[380px] md:h-[420px] overflow-hidden bg-background">
                 <iframe
                   key={demo.slug}
                   src={`/site/${demo.slug}`}
@@ -264,7 +264,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="px-6 py-20 bg-muted/30">
+      <section className="px-4 sm:px-6 py-16 md:py-20 bg-muted/30">
         <div className="mx-auto max-w-6xl">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-mint mb-2">Features</p>
@@ -287,7 +287,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section className="px-6 py-24">
+      <section className="px-4 sm:px-6 py-16 md:py-24">
         <div className="mx-auto max-w-3xl text-center">
           <div className="rounded-3xl border border-mint/20 bg-gradient-to-br from-navy/5 to-mint/5 p-12">
             <h2 className="font-heading text-3xl font-bold text-deep dark:text-white md:text-4xl">

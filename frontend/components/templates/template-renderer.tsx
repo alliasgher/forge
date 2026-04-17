@@ -50,6 +50,7 @@ export function TemplateRenderer({ site, sections }: TemplateRendererProps) {
         })}
       </main>
       <SiteFooter site={site} />
+      {(site.expires_at || site.is_demo) && <div className="h-16 sm:h-14" aria-hidden />}
       <DemoBanner expiresAt={site.expires_at} isDemo={site.is_demo} />
     </SectionWrapper>
   );

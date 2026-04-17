@@ -49,8 +49,7 @@ export function WizardPreview() {
 
       {/* Scaled-down site preview */}
       <div
-        className="relative overflow-hidden rounded-2xl border border-border shadow-xl"
-        style={{ height: 400 }}
+        className="relative overflow-hidden rounded-2xl border border-border shadow-xl h-[280px] sm:h-[360px] lg:h-[400px]"
       >
         {/* Scale wrapper */}
         <div

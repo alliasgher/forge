@@ -23,7 +23,7 @@ export function DemoBanner({ expiresAt, isDemo }: DemoBannerProps) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 px-4 py-3 flex items-center justify-between gap-4 flex-wrap"
+      className="fixed bottom-0 left-0 right-0 z-50 pb-safe pl-safe pr-safe"
       style={{
         background: isExpiringSoon
           ? "linear-gradient(135deg, #7F1D1D, #991B1B)"
@@ -31,41 +31,44 @@ export function DemoBanner({ expiresAt, isDemo }: DemoBannerProps) {
         boxShadow: "0 -4px 20px rgba(0,0,0,0.3)",
       }}
     >
-      <div className="flex items-center gap-3">
-        <div className="h-2 w-2 rounded-full bg-mint animate-pulse shrink-0" />
-        <p className="text-sm text-white">
-          {daysLeft !== null ? (
-            <>
-              <span className="font-bold">
-                {daysLeft === 0 ? "Expires today" : `${daysLeft} day${daysLeft !== 1 ? "s" : ""} left`}
-              </span>
-              {" "}on this demo site.{" "}
-              <span className="text-white/70">Want a permanent live website?</span>
-            </>
-          ) : (
-            <>
-              <span className="text-white/80">This is a demo site built with Forge.</span>
-              {" "}Want your own custom website?
-            </>
-          )}
-        </p>
-      </div>
-      <div className="flex items-center gap-2">
-        <a
-          href="https://alliasgher.vercel.app/#contact"
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-lg px-4 py-2 text-sm font-bold text-deep transition-opacity hover:opacity-90 shrink-0"
-          style={{ backgroundColor: "#00C9A7" }}
-        >
-          Contact Ali →
-        </a>
-        <button
-          onClick={() => setVisible(false)}
-          className="text-white/40 hover:text-white/70 transition-colors text-lg leading-none"
-        >
-          ×
-        </button>
+      <div className="px-4 py-3 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="h-2 w-2 rounded-full bg-mint animate-pulse shrink-0" />
+          <p className="text-xs sm:text-sm text-white leading-snug">
+            {daysLeft !== null ? (
+              <>
+                <span className="font-bold">
+                  {daysLeft === 0 ? "Expires today" : `${daysLeft}d left`}
+                </span>
+                <span className="hidden sm:inline"> on this demo site.</span>{" "}
+                <span className="text-white/70 hidden sm:inline">Want a permanent live website?</span>
+              </>
+            ) : (
+              <>
+                <span className="text-white/80">Demo site built with Forge.</span>
+                <span className="hidden sm:inline"> Want your own?</span>
+              </>
+            )}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="https://alliasgher.vercel.app/#contact"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg px-3 py-2 sm:px-4 text-xs sm:text-sm font-bold text-deep transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "#00C9A7" }}
+          >
+            Contact Ali →
+          </a>
+          <button
+            aria-label="Dismiss banner"
+            onClick={() => setVisible(false)}
+            className="flex h-8 w-8 items-center justify-center text-white/50 hover:text-white/80 transition-colors text-xl leading-none"
+          >
+            ×
+          </button>
+        </div>
       </div>
     </div>
   );
