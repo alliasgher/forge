@@ -10,7 +10,7 @@ const DEMOS = [
     type: "Luxury Retail Brand",
     slug: "demo-perfume",
     template: "Bold",
-    image: "https://images.unsplash.com/photo-1542736536-f9aea26ad27e?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
     accent: "#C9A84C",
     tagline: "Handcrafted fragrances for every mood",
     color: "#2C1654",
