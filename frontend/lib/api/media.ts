@@ -1,13 +1,11 @@
 import type { Media } from "@/lib/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
 export async function uploadMedia(siteId: number, file: File): Promise<Media> {
   const formData = new FormData();
   formData.append("file", file);
 
   const token = localStorage.getItem("forge_access_token");
-  const res = await fetch(`${API_URL}/api/sites/${siteId}/media`, {
+  const res = await fetch(`/api/sites/${siteId}/media`, {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,

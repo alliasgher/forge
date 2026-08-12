@@ -8,8 +8,6 @@ interface ContactFormProps {
   fields?: string[];
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
 export function ContactForm({ slug, primaryColor, fields = ["name", "email", "phone", "message"] }: ContactFormProps) {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -18,7 +16,7 @@ export function ContactForm({ slug, primaryColor, fields = ["name", "email", "ph
     e.preventDefault();
     setStatus("sending");
     try {
-      const res = await fetch(`${API_URL}/api/public/sites/${slug}/contact`, {
+      const res = await fetch(`/api/public/sites/${slug}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

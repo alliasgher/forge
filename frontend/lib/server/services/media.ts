@@ -1,0 +1,47 @@
+import "server-only";
+import { nanoid } from "nanoid";
+import path from "path";
+import { pool } from "../db";
+import { uploadToStorage, deleteFromStorage } from "../storage";
+import type { DbMedia as Media } from "../types";
+
+interface UploadedFile {
+  filename: string;
+  mimetype: string;
+  toBuffer: () => Promise<Buffer>;
+}
+
+export async function upload(siteId: number, file: UploadedFile): Promise<Media> {
+  const ext = path.extname(file.filename);
+  const key = `sites/${siteId}/${nanoid()}${ext}`;
+  const buffer = await file.toBuffer();
+
+  const url = await uploadToStorage(key, buffer, file.mimetype);
+
+  const result = await pool.query<Media>(
+    `INSERT INTO media (site_id, url, r2_key, filename, size, mime_type)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [siteId, url, key, file.filename, buffer.length, file.mimetype]
+  );
+
+  return result.rows[0];
+}
+
+export async function listMedia(siteId: number): Promise<Media[]> {
+  const result = await pool.query<Media>(
+    "SELECT * FROM media WHERE site_id = $1 ORDER BY created_at DESC",
+    [siteId]
+  );
+  return result.rows;
+}
+
+export async function deleteMedia(mediaId: number, siteId: number): Promise<void> {
+  const result = await pool.query<Media>(
+    "SELECT r2_key FROM media WHERE id = $1 AND site_id = $2",
+    [mediaId, siteId]
+  );
+  if (result.rows.length === 0) return;
+
+  await deleteFromStorage(result.rows[0].r2_key, result.rows[0].url);
+  await pool.query("DELETE FROM media WHERE id = $1", [mediaId]);
+}

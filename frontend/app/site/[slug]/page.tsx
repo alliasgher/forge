@@ -1,25 +1,17 @@
 import { TemplateRenderer } from "@/components/templates/template-renderer";
 import { ViewTracker } from "@/components/templates/shared/view-tracker";
-import { getPublicSite } from "@/lib/api/public";
+import { getPublicSite } from "@/lib/server/services/public";
+import type { Site, Section } from "@/lib/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-async function fetchSite(slug: string) {
-  const res = await fetch(`${API_URL}/api/public/sites/${slug}`, { cache: "no-store" });
-  if (res.status === 410) {
-    const body = await res.json().catch(() => ({}));
-    return { expired: true, businessName: body.business_name || "This site", data: null };
-  }
-  if (!res.ok) return { expired: false, businessName: "", data: null, notFound: res.status === 404 };
-  const data = await res.json();
-  return { expired: false, businessName: "", data, notFound: false };
-}
+export const dynamic = "force-dynamic";
 
 export default async function PublicSitePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const result = await fetchSite(slug);
+  // The API lives in this same app, so read straight from the service rather
+  // than making the server issue an HTTP request to itself.
+  const result = await getPublicSite(slug);
 
-  if (result.expired) {
+  if (result.kind === "expired") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
         style={{ background: "linear-gradient(135deg, #0D1B2A, #1E3A5F)" }}>
@@ -50,7 +42,7 @@ export default async function PublicSitePage({ params }: { params: Promise<{ slu
     );
   }
 
-  if (!result.data) {
+  if (result.kind === "not_found") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Site not found.</p>
@@ -61,7 +53,10 @@ export default async function PublicSitePage({ params }: { params: Promise<{ slu
   return (
     <div className="site-page">
       <ViewTracker slug={slug} />
-      <TemplateRenderer site={result.data.site} sections={result.data.sections} />
+      <TemplateRenderer
+        site={result.site as unknown as Site}
+        sections={result.sections as unknown as Section[]}
+      />
     </div>
   );
 }

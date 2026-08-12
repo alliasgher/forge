@@ -1,7 +1,5 @@
 import type { Site, Section } from "@/lib/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
 export class SiteExpiredError extends Error {
   businessName: string;
   constructor(businessName: string) {
@@ -11,7 +9,7 @@ export class SiteExpiredError extends Error {
 }
 
 export async function getPublicSite(slug: string): Promise<{ site: Site; sections: Section[] }> {
-  const res = await fetch(`${API_URL}/api/public/sites/${slug}`, { cache: "no-store" });
+  const res = await fetch(`/api/public/sites/${slug}`, { cache: "no-store" });
   if (res.status === 410) {
     const body = await res.json().catch(() => ({}));
     throw new SiteExpiredError(body.business_name || "This site");
@@ -24,7 +22,7 @@ export async function getPublicSite(slug: string): Promise<{ site: Site; section
 }
 
 export async function getDemoSites(): Promise<Site[]> {
-  const res = await fetch(`${API_URL}/api/public/demos`, { cache: "no-store" });
+  const res = await fetch(`/api/public/demos`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load demos");
   return res.json();
 }
