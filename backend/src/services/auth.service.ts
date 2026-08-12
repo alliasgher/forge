@@ -6,18 +6,28 @@ import type { User, JwtPayload } from "../types/index.js";
 const SALT_ROUNDS = 12;
 
 export async function signup(name: string, email: string, password: string) {
-  // Check if email exists
-  const existing = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
+  // Emails are stored lowercased — normalise first so the existence check and
+  // the insert agree (otherwise "A@x.com" slips past and hits the unique index).
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const existing = await pool.query("SELECT id FROM users WHERE email = $1", [normalizedEmail]);
   if (existing.rows.length > 0) {
     throw new Error("Email already registered");
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const result = await pool.query<User>(
-    `INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3)
-     RETURNING id, email, name, created_at`,
-    [email.toLowerCase().trim(), passwordHash, name.trim()]
-  );
+  let result;
+  try {
+    result = await pool.query<User>(
+      `INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3)
+       RETURNING id, email, name, created_at`,
+      [normalizedEmail, passwordHash, name.trim()]
+    );
+  } catch (err: any) {
+    // Unique violation — another request registered the same email in between
+    if (err?.code === "23505") throw new Error("Email already registered");
+    throw err;
+  }
 
   const user = result.rows[0];
   return generateAuthResponse(user);

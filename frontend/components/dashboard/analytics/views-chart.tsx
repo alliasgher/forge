@@ -3,15 +3,15 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface Props { data: { date: string; views: number }[] }
+interface Props { data: { date: string; views: number }[]; days?: number }
 
-export function ViewsChart({ data }: Props) {
-  const filled = fillDates(data);
+export function ViewsChart({ data, days = 30 }: Props) {
+  const filled = fillDates(data, days);
 
   return (
     <Card className="border-border bg-card">
       <CardContent className="pt-6">
-        <h3 className="mb-4 font-heading text-sm font-semibold">Page Views (30 days)</h3>
+        <h3 className="mb-4 font-heading text-sm font-semibold">Page Views ({days} days)</h3>
         {filled.length === 0 ? (
           <div className="flex h-[250px] items-center justify-center text-sm text-muted-foreground">No views yet</div>
         ) : (
@@ -24,7 +24,7 @@ export function ViewsChart({ data }: Props) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="date" tickFormatter={(d) => { const dt = new Date(d); return `${dt.getMonth()+1}/${dt.getDate()}`; }} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="date" tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
               <Area type="monotone" dataKey="views" stroke="#00C9A7" strokeWidth={2} fill="url(#viewGradient)" />
@@ -36,14 +36,27 @@ export function ViewsChart({ data }: Props) {
   );
 }
 
-function fillDates(data: { date: string; views: number }[]) {
+// The API buckets views by UTC day ("YYYY-MM-DD"), so the axis is built in UTC
+// too — mixing the two shifts every point by a day for non-UTC viewers.
+function utcKey(d: Date) {
+  return d.toISOString().split("T")[0];
+}
+
+function formatTick(key: string) {
+  const dt = new Date(`${key}T00:00:00Z`);
+  return `${dt.getUTCMonth() + 1}/${dt.getUTCDate()}`;
+}
+
+function fillDates(data: { date: string; views: number }[], days: number) {
   if (data.length === 0) return [];
   const map = new Map(data.map((d) => [d.date.split("T")[0], d.views]));
-  const end = new Date(); const start = new Date(); start.setDate(start.getDate() - 29);
+  const cursor = new Date();
+  cursor.setUTCDate(cursor.getUTCDate() - (days - 1));
   const result: { date: string; views: number }[] = [];
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = d.toISOString().split("T")[0];
+  for (let i = 0; i < days; i++) {
+    const key = utcKey(cursor);
     result.push({ date: key, views: map.get(key) || 0 });
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
   }
   return result;
 }

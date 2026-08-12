@@ -9,7 +9,7 @@ export async function analyticsRoutes(app: FastifyInstance) {
     { preHandler: [authMiddleware, siteOwnerMiddleware] },
     async (request) => {
       const days = parseInt(request.query.days || "30");
-      return analyticsService.getAnalytics(parseInt(request.params.siteId), days);
+      return analyticsService.getAnalytics(parseInt(request.params.siteId), Number.isNaN(days) ? 30 : days);
     }
   );
 }

@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { OverviewCards } from "@/components/dashboard/overview-cards";
 import { useSiteStore } from "@/lib/stores/site-store";
 import { api } from "@/lib/api-client";
+import { publicSiteUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function DashboardHome() {
@@ -55,8 +56,7 @@ export default function DashboardHome() {
 
   function copyUrl() {
     if (!site) return;
-    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/${site.slug}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(publicSiteUrl(site.slug));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast.success("URL copied!");

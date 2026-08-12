@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Save, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,12 +12,32 @@ import { SectionWrapper } from "@/components/templates/shared/section-wrapper";
 import { toast } from "sonner";
 import type { Site, SiteColors, SiteFonts } from "@/lib/types";
 
+// Presets carry display-only extras (name, headingVar, bodyVar) that must not
+// be persisted into the site's colors/fonts JSON.
+function toColors(preset: typeof COLOR_PRESETS[number]): SiteColors {
+  const { primary, secondary, accent, background, text } = preset;
+  return { primary, secondary, accent, background, text };
+}
+
+function toFonts(pair: typeof FONT_OPTIONS[number]): SiteFonts {
+  return { heading: pair.heading, body: pair.body };
+}
+
 export default function AppearancePage() {
   const { site, setSite } = useSiteStore();
   const [saving, setSaving] = useState(false);
   const [template, setTemplate] = useState<"modern" | "classic" | "bold">(site?.template as any || "modern");
-  const [colors, setColors] = useState<SiteColors>(site?.colors || COLOR_PRESETS[0] as any);
-  const [fonts, setFonts] = useState<SiteFonts>(site?.fonts || FONT_OPTIONS[0]);
+  const [colors, setColors] = useState<SiteColors>(site?.colors || toColors(COLOR_PRESETS[0]));
+  const [fonts, setFonts] = useState<SiteFonts>(site?.fonts || toFonts(FONT_OPTIONS[0]));
+
+  // The site loads asynchronously — without this the controls keep their
+  // fallback defaults and saving would overwrite the real appearance.
+  useEffect(() => {
+    if (!site) return;
+    setTemplate(site.template || "modern");
+    if (site.colors) setColors(site.colors);
+    if (site.fonts) setFonts(site.fonts);
+  }, [site]);
 
   async function handleSave() {
     if (!site) return;
@@ -86,7 +106,7 @@ export default function AppearancePage() {
               {COLOR_PRESETS.map((preset) => {
                 const sel = colors.primary === preset.primary && colors.secondary === preset.secondary;
                 return (
-                  <button key={preset.name} onClick={() => setColors(preset as any)}
+                  <button key={preset.name} onClick={() => setColors(toColors(preset))}
                     className={`flex flex-col items-center gap-2 rounded-xl border p-3 transition-all ${sel ? "border-mint bg-mint/5 shadow-sm" : "border-border bg-background dark:bg-muted/30 hover:border-mint/30"}`}>
                     <div className="flex gap-1">
                       {[preset.primary, preset.secondary, preset.accent].map((c, i) => (
@@ -109,7 +129,7 @@ export default function AppearancePage() {
               {FONT_OPTIONS.map((pair) => {
                 const sel = fonts.heading === pair.heading && fonts.body === pair.body;
                 return (
-                  <button key={pair.heading} onClick={() => setFonts(pair)}
+                  <button key={pair.heading} onClick={() => setFonts(toFonts(pair))}
                     className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${sel ? "border-mint bg-mint/5" : "border-border hover:border-mint/30"}`}>
                     <div>
                       <p className="text-base font-semibold" style={{ fontFamily: (pair as any).headingVar || `${pair.heading}, serif` }}>

@@ -1,8 +1,7 @@
+import { redirect } from "next/navigation";
+
+// Lead details are shown in a dialog on the leads list — this route only exists
+// for old links, so send them to the list rather than a dead page.
 export default function LeadDetailPage() {
-  return (
-    <div>
-      <h1 className="font-heading text-2xl font-bold">Lead Detail</h1>
-      <p className="mt-2 text-muted-foreground">Full lead view — coming in Phase 8.</p>
-    </div>
-  );
+  redirect("/dashboard/leads");
 }

@@ -12,6 +12,9 @@ export async function publicRoutes(app: FastifyInstance) {
       const site = await sitesService.getSiteBySlug(request.params.slug);
       if (!site) return reply.status(404).send({ error: "Site not found" });
 
+      // Unpublished (draft) sites are not visible to the public
+      if (!site.is_published) return reply.status(404).send({ error: "Site not found" });
+
       // Check expiry
       if (site.expires_at && new Date(site.expires_at) < new Date()) {
         return reply.status(410).send({ error: "expired", business_name: site.business_name });
@@ -61,7 +64,7 @@ export async function publicRoutes(app: FastifyInstance) {
   // Get demo sites
   app.get("/api/public/demos", async () => {
     const { pool } = await import("../db/client.js");
-    const result = await pool.query("SELECT * FROM sites WHERE is_demo = true ORDER BY created_at ASC");
+    const result = await pool.query("SELECT * FROM sites WHERE is_demo = true AND is_published = true ORDER BY created_at ASC");
     return result.rows;
   });
 }

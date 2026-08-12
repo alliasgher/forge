@@ -15,12 +15,18 @@ export async function recordPageView(siteId: number, path: string, referrer: str
 }
 
 export async function getAnalytics(siteId: number, days = 30) {
+  // Guard against NaN / absurd values being interpolated into the interval literal
+  const windowDays = Number.isFinite(days) ? Math.min(365, Math.max(1, Math.floor(days))) : 30;
+
   const [totalResult, timeResult, deviceResult, pageResult, referrerResult] = await Promise.all([
     pool.query<{ count: string }>("SELECT COUNT(*) as count FROM page_views WHERE site_id = $1", [siteId]),
+    // TO_CHAR keeps the day as a plain 'YYYY-MM-DD' string. DATE() returns a `date`
+    // that node-postgres parses into a Date at *local* midnight, which shifts the
+    // bucket by a day for any server not running in UTC.
     pool.query<{ date: string; views: string }>(
-      `SELECT DATE(created_at) as date, COUNT(*) as views FROM page_views
-       WHERE site_id = $1 AND created_at > NOW() - INTERVAL '${days} days'
-       GROUP BY DATE(created_at) ORDER BY date`, [siteId]
+      `SELECT TO_CHAR(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') as date, COUNT(*) as views FROM page_views
+       WHERE site_id = $1 AND created_at > NOW() - INTERVAL '${windowDays} days'
+       GROUP BY 1 ORDER BY 1`, [siteId]
     ),
     pool.query<{ device_type: string; views: string }>(
       `SELECT device_type, COUNT(*) as views FROM page_views WHERE site_id = $1 AND device_type IS NOT NULL

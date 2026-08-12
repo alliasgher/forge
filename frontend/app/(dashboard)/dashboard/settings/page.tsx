@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, Trash2, Globe, Lock, ExternalLink, Check } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSiteStore } from "@/lib/stores/site-store";
 import { updateSite, deleteSite } from "@/lib/api/sites";
 import { api } from "@/lib/api-client";
+import { publicSiteUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -27,7 +28,7 @@ export default function SettingsPage() {
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       business_name: site?.business_name || "",
       tagline: site?.tagline || "",
@@ -36,6 +37,20 @@ export default function SettingsPage() {
       address: site?.address || "",
     },
   });
+
+  // The site loads asynchronously, so defaultValues are empty on first render.
+  // Without this the form stays blank and saving would wipe the business details.
+  useEffect(() => {
+    if (!site) return;
+    reset({
+      business_name: site.business_name || "",
+      tagline: site.tagline || "",
+      phone: site.phone || "",
+      email: site.email || "",
+      address: site.address || "",
+    });
+    setSlugValue(site.slug);
+  }, [site, reset]);
 
   async function onSubmit(data: any) {
     if (!site) return;
@@ -100,7 +115,7 @@ export default function SettingsPage() {
 
   if (!site) return null;
 
-  const siteUrl = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/${site.slug}`;
+  const siteUrl = publicSiteUrl(site.slug);
 
   return (
     <div className="space-y-6 max-w-2xl">

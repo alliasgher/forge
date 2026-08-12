@@ -19,6 +19,9 @@ await app.register(cors, {
   origin: [
     config.frontendUrl,
     /\.vercel\.app$/,
+    // Next dev picks the next free port when 3000 is taken, so accept any
+    // localhost origin outside production rather than silently failing CORS.
+    ...(process.env.NODE_ENV === "production" ? [] : [/^http:\/\/(localhost|127\.0\.0\.1):\d+$/]),
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
 });

@@ -9,6 +9,8 @@ import { useSiteStore } from "@/lib/stores/site-store";
 import { getAnalytics } from "@/lib/api/analytics";
 import type { AnalyticsSummary } from "@/lib/types";
 
+const ANALYTICS_DAYS = 7;
+
 export default function AnalyticsPage() {
   const site = useSiteStore((s) => s.site);
   const siteLoading = useSiteStore((s) => s.loading);
@@ -18,7 +20,7 @@ export default function AnalyticsPage() {
   const refresh = (silent = false) => {
     if (!site) return;
     if (!silent) setState({ loading: true, data: null });
-    getAnalytics(site.id, 7)
+    getAnalytics(site.id, ANALYTICS_DAYS)
       .then((d) => setState({ loading: false, data: d }))
       .catch(() => setState((s) => ({ ...s, loading: false })));
   };
@@ -54,7 +56,8 @@ export default function AnalyticsPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold">Analytics</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Last 7 days · auto-refreshes every 30s</p>
+          {/* Totals below are all-time; only the chart is windowed. */}
+          <p className="mt-1 text-sm text-muted-foreground">All-time totals · chart shows last {ANALYTICS_DAYS} days · auto-refreshes every 30s</p>
         </div>
         <button
           onClick={() => refresh(false)}
@@ -83,7 +86,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className={`transition-opacity duration-300 ${loading ? "opacity-40" : "opacity-100"}`}>
-        <ViewsChart data={data?.views_over_time || []} />
+        <ViewsChart data={data?.views_over_time || []} days={ANALYTICS_DAYS} />
       </div>
 
       {data && (data.devices.length > 0 || data.referrers.length > 0) && (
