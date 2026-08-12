@@ -58,8 +58,14 @@ export async function deleteFromStorage(key: string, url?: string): Promise<void
     return;
   }
   // ── Cloudinary ──
-  if (config.cloudinaryUrl && url) {
-    const publicId = url.split("/upload/")[1]?.replace(/\.[^.]+$/, "");
+  if (config.cloudinaryUrl) {
+    // Upload passes { folder, public_id } derived from `key`, so the asset's
+    // real public_id is just the key without its extension. Deriving it from the
+    // URL instead picks up the "v<version>/" segment, which never matches — the
+    // destroy call then silently no-ops and orphans the file.
+    const publicId =
+      key?.replace(/\.[^.]+$/, "") ||
+      url?.split("/upload/")[1]?.replace(/^v\d+\//, "").replace(/\.[^.]+$/, "");
     if (publicId) await cloudinary.uploader.destroy(publicId);
   }
 }
