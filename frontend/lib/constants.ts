@@ -25,6 +25,14 @@ export const SECTION_TYPES = [
   { value: "pricing", label: "Pricing", icon: "CreditCard" },
 ] as const;
 
+/**
+ * Upload ceiling, shared by the dropzone and the API route so the two cannot
+ * drift. Bounded by Vercel's 4.5MB serverless request-body limit — a larger
+ * value here would let files through the client only to fail on the server.
+ */
+export const MAX_UPLOAD_BYTES = 4.5 * 1024 * 1024;
+export const MAX_UPLOAD_LABEL = "4.5MB";
+
 export const DEFAULT_COLORS = {
   primary: "#1E3A5F",
   secondary: "#00C9A7",

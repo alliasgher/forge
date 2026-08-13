@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import * as mediaService from "@/lib/server/services/media";
 import { handler, requireSiteOwner } from "@/lib/server/auth-guard";
+import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
-// Vercel caps serverless request bodies at 4.5MB, so that — not the old 5MB
-// Fastify limit — is the real ceiling here.
-const MAX_BYTES = 4.5 * 1024 * 1024;
+// Shared with the upload dropzone so the advertised limit and the enforced one
+// cannot drift apart.
+const MAX_BYTES = MAX_UPLOAD_BYTES;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
 
 type Ctx = { params: Promise<{ siteId: string }> };
@@ -31,7 +32,7 @@ export const POST = handler(async (request: Request, ctx: Ctx) => {
     return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Image must be 4.5MB or smaller" }, { status: 413 });
+    return NextResponse.json({ error: `Image must be ${MAX_UPLOAD_LABEL} or smaller` }, { status: 413 });
   }
 
   try {

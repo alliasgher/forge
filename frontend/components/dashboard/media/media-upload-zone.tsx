@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Upload, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { uploadMedia } from "@/lib/api/media";
+import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "@/lib/constants";
 import { useSiteStore } from "@/lib/stores/site-store";
 import { toast } from "sonner";
 import type { Media } from "@/lib/types";
@@ -40,7 +41,7 @@ export function MediaUploadZone({ onUploaded }: MediaUploadZoneProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "image/*": [".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"] },
-    maxSize: 5 * 1024 * 1024,
+    maxSize: MAX_UPLOAD_BYTES,
     disabled: uploading,
   });
 
@@ -67,7 +68,7 @@ export function MediaUploadZone({ onUploaded }: MediaUploadZoneProps) {
           <p className="text-sm font-medium">
             {isDragActive ? "Drop images here" : "Drag & drop images, or click to browse"}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">JPG, PNG, WebP, GIF, SVG — max 5MB</p>
+          <p className="mt-1 text-xs text-muted-foreground">JPG, PNG, WebP, GIF, SVG — max {MAX_UPLOAD_LABEL}</p>
         </>
       )}
     </div>
